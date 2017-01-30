@@ -23,3 +23,7 @@ TODO
 ## Text
 
 TODO
+
+## Testovací data
+
+http://www.mediafire.com/file/5yzpynibxigcvng/podklady_ACR_terenni_pruzkum.7z
