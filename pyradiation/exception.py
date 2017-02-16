@@ -1,0 +1,2 @@
+class RadiationError(StandardError):
+    pass
