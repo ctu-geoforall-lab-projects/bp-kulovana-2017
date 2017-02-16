@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/RadiationReconnaissanceResults" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
