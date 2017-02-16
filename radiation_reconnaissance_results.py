@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtGui import QAction, QIcon, QToolButton
 # Initialize Qt resources from file resources.py
 import resources
 
@@ -72,6 +72,10 @@ class RadiationReconnaissanceResults:
 
         self.pluginIsActive = False
         self.dockwidget = None
+
+        # add plugin icon into plugin toolbar
+        self.toolButton = QToolButton()
+        self.iface.addToolBarWidget(self.toolButton)
 
 
     # noinspection PyMethodMayBeStatic
@@ -142,6 +146,7 @@ class RadiationReconnaissanceResults:
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
+        self.toolButton.setDefaultAction(action)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
@@ -152,7 +157,7 @@ class RadiationReconnaissanceResults:
             action.setWhatsThis(whats_this)
 
         if add_to_toolbar:
-            self.toolbar.addAction(action)
+            pass
 
         if add_to_menu:
             self.iface.addPluginToMenu(
