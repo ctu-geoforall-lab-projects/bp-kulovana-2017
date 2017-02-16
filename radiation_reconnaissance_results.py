@@ -175,7 +175,7 @@ class RadiationReconnaissanceResults:
         icon_path = ':/plugins/RadiationReconnaissanceResults/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'It generates polygons from grid'),
+            text=self.tr(u'Radiation Reconnaissance Results'),
             callback=self.run,
             parent=self.iface.mainWindow())
 
