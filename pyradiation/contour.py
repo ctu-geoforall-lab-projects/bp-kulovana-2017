@@ -15,4 +15,7 @@ class RadiationIsolines:
 
     def generate(self, levels):
         print("Level count: {}".format(levels))
+        #ContourGenerate()
+
+
     
