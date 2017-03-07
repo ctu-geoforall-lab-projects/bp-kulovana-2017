@@ -10,6 +10,7 @@ from pyradiation.contour import RadiationIsolines
 
 def main(raster):
     rc = RadiationIsolines(raster)
+    rc.destination('c:\\Users\\Terka\\Documents\\BAKALARKA\\ACR\\podklady_ACR_terenni_pruzkum\\contour_pokus.shp')
     rc.generate([0.1, 1, 5, 10, 100, 1000])
 
 print(__name__)
