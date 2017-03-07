@@ -13,8 +13,8 @@ class RadiationIsolines:
     def __del__(self):
         self.ds = None
 
-    def destination(self,dst_filename):
-        # Generate layer to save Contourlines in
+    def destination(self, dst_filename):
+        # Generate layer to save isolines in
         self.ogr_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
         self.contour_shp = self.ogr_ds.CreateLayer('contour')
 
@@ -24,4 +24,7 @@ class RadiationIsolines:
         self.contour_shp.CreateField(self.field_defn)
 
     def generate(self, levels):
+        # Generate isolines with fixed levels
         print("Level count: {}".format(levels))
+        self.band = self.ds.GetRasterBand(1)
+        gdal.ContourGenerate(self.band, 0, 0, levels, 0, 0, self.contour_shp, 0, 1)
