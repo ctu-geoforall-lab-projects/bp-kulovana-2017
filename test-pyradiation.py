@@ -1,24 +1,32 @@
 #!/usr/bin/env python
 import sys
-#import os
+import os
+
+# TODO: to be solved
 #sys.path.insert(0, os.path.dirname(os.path.realpath('__file__')))
-#print(os.path.dirname(os.path.realpath('__file__')))
-sys.path.insert(0, 'c:\\Users\\Terka\\.qgis2\\python\\plugins\\bp-kulovana-2017\\')
-#print(sys.path)
+home = os.path.expanduser("~")
+sys.path.insert(0, os.path.join(home, '.qgis2', 'python', 'plugins', 'bp-kulovana-2017'))
 
 from pyradiation.contour import RadiationIsolines
 
 def main(raster):
     rc = RadiationIsolines(raster)
-    rc.destination('c:\\Users\\Terka\\Documents\\BAKALARKA\\ACR\\podklady_ACR_terenni_pruzkum\\contour_pokus.shp')
+    output_dir = os.path.dirname(raster)
+    output_filename = '{}_isolines.shp'.format(
+        os.path.splitext(os.path.basename(raster))[0]
+        )
+    output = os.path.join(output_dir, output_filename)
+    rc.destination(output)
     rc.generate([0.1, 1, 5, 10, 100, 1000])
+    print('{} generated'.format(output))
 
-print(__name__)
-if __name__ == "__main__":
-    print(len(sys.argv))
+if __name__ in ("__main__", "__console__"):
     if len(sys.argv) < 2:
-        sys.exit("Input raster must be given")
+        data_dir = os.path.join(home, 'Documents', 'BAKALARKA', 'ACR',
+                                'podklady_ACR_terenni_pruzkum')
+        input_raster = os.path.join(data_dir,
+                                    'CBRN_fictional_points_locality2_spline_doserate_cGyh_reclass.sdat')
+    else:
+        input_raster = sys.argv[1]
 
-    main(sys.argv[1])
-elif __name__ == "__console__":
-    main('c:\\Users\\Terka\\Documents\\BAKALARKA\\ACR\\podklady_ACR_terenni_pruzkum\\CBRN_fictional_points_locality2_spline_doserate_cGyh_reclass.sdat')
+    main(input_raster)
