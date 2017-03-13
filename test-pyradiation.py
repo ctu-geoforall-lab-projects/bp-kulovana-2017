@@ -7,11 +7,11 @@ import os
 home = os.path.expanduser("~")
 sys.path.insert(0, os.path.join(home, '.qgis2', 'python', 'plugins', 'bp-kulovana-2017'))
 
-import pyradiation.contour as contour
-reload(contour)
+import pyradiation.isolines as isolines
+reload(isolines)
 
 def main(raster):
-    rc = contour.RadiationIsolines(raster)
+    rc = isolines.RadiationIsolines(raster)
     output_dir = os.path.dirname(raster)
     output_filename = '{}_isolines.shp'.format(
         os.path.splitext(os.path.basename(raster))[0]
