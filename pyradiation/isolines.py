@@ -1,3 +1,5 @@
+import os
+
 from osgeo import gdal, ogr, osr
 
 from .exception import RadiationError
@@ -17,13 +19,17 @@ class RadiationIsolines:
         if self.output_ds is not None:
             self.output_ds.Destroy()
 
-    def destination(self, dst_filename):
+    def destination(self, dst_filename, overwrite=True):
         # Generate layer to save isolines in
 
         # Create the spatial reference
         input_srs = self.input_ds.GetProjection()
         output_srs = osr.SpatialReference()
         output_srs.ImportFromWkt(input_srs)
+
+        # Check if destination exists
+        if os.path.exists(dst_filename) and not overwrite:
+            raise RadiationError("File {} already exists".format(dst_filename))
 
         # Generate layer to save isolines in
         self.output_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
