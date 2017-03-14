@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 from osgeo import gdal, ogr, osr
 
@@ -19,7 +20,7 @@ class RadiationIsolines:
         if self.output_ds is not None:
             self.output_ds.Destroy()
 
-    def destination(self, dst_filename, overwrite=True):
+    def destination(self, dst_filename=None, overwrite=True):
         # Generate layer to save isolines in
 
         # Create the spatial reference
@@ -28,9 +29,12 @@ class RadiationIsolines:
         output_srs.ImportFromWkt(input_srs)
 
         # Check if destination exists
-        if os.path.exists(dst_filename) and not overwrite:
+        if dst_filename and os.path.exists(dst_filename) and not overwrite:
             raise RadiationError("File {} already exists".format(dst_filename))
 
+        if not dst_filename:
+            dst_filename = tempfile.NamedTemporaryFile().name
+            
         # Generate layer to save isolines in
         self.output_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
         self.output_layer = self.output_ds.CreateLayer('isolines', output_srs)
@@ -49,3 +53,6 @@ class RadiationIsolines:
         ret = gdal.ContourGenerate(band, 0, 0, levels, 0, 0, self.output_layer, 0, 1)
         if ret != gdal.CE_None:
             raise RadiationError("Isolines generation failed")
+
+    def layer(self):
+        return self.output_layer
