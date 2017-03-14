@@ -1,4 +1,4 @@
-from osgeo import gdal, ogr
+from osgeo import gdal, ogr, osr
 
 from .exception import RadiationError
 
@@ -19,8 +19,15 @@ class RadiationIsolines:
 
     def destination(self, dst_filename):
         # Generate layer to save isolines in
+
+        # Create the spatial reference
+        input_srs = self.input_ds.GetProjection()
+        output_srs = osr.SpatialReference()
+        output_srs.ImportFromWkt(input_srs)
+
+        # Generate layer to save isolines in
         self.output_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
-        self.output_layer = self.output_ds.CreateLayer('isolines')
+        self.output_layer = self.output_ds.CreateLayer('isolines', output_srs)
 
         field_defn = ogr.FieldDefn("ID", ogr.OFTInteger)
         self.output_layer.CreateField(field_defn)
