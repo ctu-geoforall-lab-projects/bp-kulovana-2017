@@ -29,7 +29,7 @@ def main(raster):
         )
     output = os.path.join(output_dir, output_filename)
     rp.destination(output)
-    rp.polygonize()
+    #rp.polygonize()
     print('{} generated'.format(output))
     
 if __name__ in ("__main__", "__console__"):

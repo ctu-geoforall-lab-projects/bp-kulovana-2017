@@ -25,8 +25,8 @@ class RadiationIsolines:
 
         # Create the spatial reference
         input_srs = self.input_ds.GetProjection()
-        output_srs = osr.SpatialReference()
-        output_srs.ImportFromWkt(input_srs)
+        self.output_srs = osr.SpatialReference()
+        self.output_srs.ImportFromWkt(input_srs)
 
         # Check if destination exists
         if dst_filename and os.path.exists(dst_filename) and not overwrite:
@@ -35,9 +35,9 @@ class RadiationIsolines:
         if not dst_filename:
             dst_filename = tempfile.NamedTemporaryFile().name
             
-        # Generate layer to save isolines in
+        # Generate layer
         self.output_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
-        self.output_layer = self.output_ds.CreateLayer('isolines', output_srs)
+        self.output_layer = self.output_ds.CreateLayer('isolines', self.output_srs)
 
         field_defn = ogr.FieldDefn("ID", ogr.OFTInteger)
         self.output_layer.CreateField(field_defn)
