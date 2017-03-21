@@ -11,8 +11,14 @@ class RadiationPolygonizer:
         self.generalizer = generalizer
 
     def destination(self, dst_filename=None, overwrite=True):
-        # Generate layer to save polygons in
+        """Generate layer to save polygons in.
 
+        If output file exists and overwrite argument is False than
+        RadiationError is raised.
+
+        :param dst_filename: name for output file
+        :param overwrite: True for overwriting output files
+        """
         # Get the spatial reference
         self.output_srs = self.input_lines.output_srs
 
@@ -25,7 +31,8 @@ class RadiationPolygonizer:
 
         # Generate layer
         self.output_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
-        self.output_layer = self.output_ds.CreateLayer('polygons', self.output_srs)
+        layer_name = os.path.splitext(os.path.basename(dst_filename))[0]
+        self.output_layer = self.output_ds.CreateLayer(layer_name, self.output_srs)
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
 
@@ -33,6 +40,11 @@ class RadiationPolygonizer:
         # self.input_lines.layer()
         # [ (geom1, value1), (geom2, value2), ...]
 
+        pass
+
+    def _region_box(self):
+        """Create geometry of region box defined by input raster layer.
+        """
         # Get raster
         raster = self.input_lines.input_ds
         # Get size of raster
@@ -55,17 +67,18 @@ class RadiationPolygonizer:
         region_box.AddPoint(bottomRightX, bottomRightY)
         region_box.AddPoint(topLeftX, bottomRightY)
         region_box.AddPoint(topLeftX, topLeftY)
-        #print region_box.ExportToWkt()
 
         # Put geometry inside a feature
-        layerDefinition = self.output_layer.GetLayerDefn()
-        featureIndex = 0
-        feature = ogr.Feature(layerDefinition)
-        feature.SetGeometry(region_box)
-        feature.SetFID(featureIndex)
+        # layerDefinition = self.output_layer.GetLayerDefn()
+        # featureIndex = 0
+        # feature = ogr.Feature(layerDefinition)
+        # feature.SetGeometry(region_box)
+        # feature.SetFID(featureIndex)
 
-        # Create the feature in the layer (shapefile)
-        self.output_layer.CreateFeature(feature)
+        # # Create the feature in the layer (shapefile)
+        # self.output_layer.CreateFeature(feature)
+
+        return region_box
 
     def _create_polygons(self, geoms):
         # [ (geom1, value1), (geom2, value2), ...]
@@ -76,6 +89,10 @@ class RadiationPolygonizer:
         pass
 
     def polygonize(self):
+        # 0. create region box geometry
+        region_box = self._region_box()
+        print (region_box)
+
         # 1. close open isolines (based on bbox)
         # print warning if isolines cannot be closed
         lines = self._close_lines()
