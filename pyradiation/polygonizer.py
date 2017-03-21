@@ -36,75 +36,64 @@ class RadiationPolygonizer:
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
 
-    def _close_lines(self):
-        # self.input_lines.layer()
-        # [ (geom1, value1), (geom2, value2), ...]
+    def _close_line(self, geom, box):
+        """Close lines.
 
-        pass
+        If start point differs from end point than line is close by
+        region box geometry. Intersection with region box is computed
+        in 2D.
 
-    def _region_box(self):
-        """Create geometry of region box defined by input raster layer.
+        :param lines: input lines geometry (defined as LineStrings)
+        :param box: region box geometry (defined as Linestring)
+
+        :return: closed geometry
         """
-        # Get raster
-        raster = self.input_lines.input_ds
-        # Get size of raster
-        cols = raster.RasterXSize
-        rows = raster.RasterYSize
-        # Get coordinates of top left corner
-        geoinformation = raster.GetGeoTransform()
-        topLeftX = geoinformation[0]
-        topLeftY = geoinformation[3]
-        # Count bottom right corner
-        x_size = geoinformation[1]*cols
-        y_size = geoinformation[5]*rows
-        bottomRightX = topLeftX + x_size
-        bottomRightY = topLeftY + y_size
+        print (geom.IsRing())
 
-        # Create region box geometry
-        region_box = ogr.Geometry(ogr.wkbLineString)
-        region_box.AddPoint(topLeftX, topLeftY)
-        region_box.AddPoint(bottomRightX, topLeftY)
-        region_box.AddPoint(bottomRightX, bottomRightY)
-        region_box.AddPoint(topLeftX, bottomRightY)
-        region_box.AddPoint(topLeftX, topLeftY)
+    def _create_polygon(self, geom):
+        """Create polygon from closed linestring geometry.
 
-        # Put geometry inside a feature
-        # layerDefinition = self.output_layer.GetLayerDefn()
-        # featureIndex = 0
-        # feature = ogr.Feature(layerDefinition)
-        # feature.SetGeometry(region_box)
-        # feature.SetFID(featureIndex)
+        If input geometry is not closed linestring that PolygonError
+        is raised.
 
-        # # Create the feature in the layer (shapefile)
-        # self.output_layer.CreateFeature(feature)
+        :param geom: input linestring geometry
 
-        return region_box
-
-    def _create_polygons(self, geoms):
-        # [ (geom1, value1), (geom2, value2), ...]
-        return []
+        :return: polygon geometry
+        """
+        pass
 
     def _write_output(self):
         # check if destination is defined
         pass
 
     def polygonize(self):
-        # 0. create region box geometry
-        region_box = self._region_box()
+        # 0. create region box geometry from input raster
+        region_box = self.input_lines.box()
         print (region_box)
 
-        # 1. close open isolines (based on bbox)
-        # print warning if isolines cannot be closed
-        lines = self._close_lines()
+        lines_layer = self.input_lines.layer()
+        lines_layer.ResetReading()
+        while True:
+            feat = lines_layer.GetNextFeature()
+            if feat is None:
+                break
 
-        # 2. perform generalization if defined
-        # if generalizer:
-        #     lines = generalizer.perform(lines)
-        #
-        # # 3. create polygons from closed lines
-        # polygons = self._polygonize(lines)
-        #
-        # # 4. write polygons to output
-        # self._write_output()
-        #
-        # print (self.input_lines.layer().GetFeatureCount())
+            geom = feat.GetGeometryRef()
+            # 1. close open isolines (based on bbox)
+            # print warning if isolines cannot be closed
+            geom_closed = self._close_line(geom, region_box)
+
+            # 2. perform generalization if defined
+            #
+            # if generalizer:
+            #     geom_simplified = generalizer.perform(geom_closed)
+            # else:
+            #     geom_simlified = geom_closed
+            #
+            # 3. create polygons from closed lines
+            # polygon = self._create_polygon(geom_simplied)
+            #
+            # 4. write polygons to output
+            # self._write_output(polygon, value)
+            #
+            # print (self.input_lines.layer().GetFeatureCount())

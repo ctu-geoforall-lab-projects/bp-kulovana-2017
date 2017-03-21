@@ -56,3 +56,40 @@ class RadiationIsolines:
 
     def layer(self):
         return self.output_layer
+
+    def box(self):
+        """Create geometry of region box defined by input raster layer.
+        """
+        raster = self.input_ds
+        # Get size of raster
+        cols = raster.RasterXSize
+        rows = raster.RasterYSize
+        # Get coordinates of top left corner
+        geoinformation = raster.GetGeoTransform()
+        topLeftX = geoinformation[0]
+        topLeftY = geoinformation[3]
+        # Count bottom right corner
+        x_size = geoinformation[1]*cols
+        y_size = geoinformation[5]*rows
+        bottomRightX = topLeftX + x_size
+        bottomRightY = topLeftY + y_size
+
+        # Create region box geometry
+        region_box = ogr.Geometry(ogr.wkbLineString)
+        region_box.AddPoint(topLeftX, topLeftY)
+        region_box.AddPoint(bottomRightX, topLeftY)
+        region_box.AddPoint(bottomRightX, bottomRightY)
+        region_box.AddPoint(topLeftX, bottomRightY)
+        region_box.AddPoint(topLeftX, topLeftY)
+
+        # Put geometry inside a feature
+        # layerDefinition = self.output_layer.GetLayerDefn()
+        # featureIndex = 0
+        # feature = ogr.Feature(layerDefinition)
+        # feature.SetGeometry(region_box)
+        # feature.SetFID(featureIndex)
+
+        # # Create the feature in the layer (shapefile)
+        # self.output_layer.CreateFeature(feature)
+
+        return region_box
