@@ -32,7 +32,40 @@ class RadiationPolygonizer:
     def _close_lines(self):
         # self.input_lines.layer()
         # [ (geom1, value1), (geom2, value2), ...]
-        return []
+
+        # Get raster
+        raster = self.input_lines.input_ds
+        # Get size of raster
+        cols = raster.RasterXSize
+        rows = raster.RasterYSize
+        # Get coordinates of top left corner
+        geoinformation = raster.GetGeoTransform()
+        topLeftX = geoinformation[0]
+        topLeftY = geoinformation[3]
+        # Count bottom right corner
+        x_size = geoinformation[1]*cols
+        y_size = geoinformation[5]*rows
+        bottomRightX = topLeftX + x_size
+        bottomRightY = topLeftY + y_size
+
+        # Create region box geometry
+        region_box = ogr.Geometry(ogr.wkbLineString)
+        region_box.AddPoint(topLeftX, topLeftY)
+        region_box.AddPoint(bottomRightX, topLeftY)
+        region_box.AddPoint(bottomRightX, bottomRightY)
+        region_box.AddPoint(topLeftX, bottomRightY)
+        region_box.AddPoint(topLeftX, topLeftY)
+        #print region_box.ExportToWkt()
+
+        # Put geometry inside a feature
+        layerDefinition = self.output_layer.GetLayerDefn()
+        featureIndex = 0
+        feature = ogr.Feature(layerDefinition)
+        feature.SetGeometry(region_box)
+        feature.SetFID(featureIndex)
+
+        # Create the feature in the layer (shapefile)
+        self.output_layer.CreateFeature(feature)
 
     def _create_polygons(self, geoms):
         # [ (geom1, value1), (geom2, value2), ...]
@@ -45,16 +78,16 @@ class RadiationPolygonizer:
     def polygonize(self):
         # 1. close open isolines (based on bbox)
         # print warning if isolines cannot be closed
-        # lines = self._close_lines()
+        lines = self._close_lines()
 
         # 2. perform generalization if defined
-        if generalizer:
-            lines = generalizer.perform(lines)
-
-        # 3. create polygons from closed lines
-        polygons = self._polygonize(lines)
-
-        # 4. write polygons to output
-        self._write_output()
-
-        print (self.input_lines.layer().GetFeatureCount())
+        # if generalizer:
+        #     lines = generalizer.perform(lines)
+        #
+        # # 3. create polygons from closed lines
+        # polygons = self._polygonize(lines)
+        #
+        # # 4. write polygons to output
+        # self._write_output()
+        #
+        # print (self.input_lines.layer().GetFeatureCount())
