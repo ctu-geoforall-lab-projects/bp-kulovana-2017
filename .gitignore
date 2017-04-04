@@ -1,9 +1,9 @@
 *.pyc
 .idea/
-.aux
-.gz
-.lof
-.log
-.out
-.toc
+*.aux
+*.gz
+*.lof
+*.log
+*.out
+*.toc
 *~
