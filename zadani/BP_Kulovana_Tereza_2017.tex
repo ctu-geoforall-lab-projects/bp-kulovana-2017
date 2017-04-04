@@ -1,0 +1,201 @@
+% options:
+% thesis=B bachelor's thesis
+% thesis=M master's thesis
+% czech thesis in Czech language
+% slovak thesis in Slovak language
+% english thesis in English language
+% hidelinks remove colour boxes around hyperlinks
+
+\documentclass[thesis=B,czech]{FITthesis}[2012/06/26]
+
+\usepackage[cp1250]{inputenc} % LaTeX source encoded as Windows-1250
+
+\usepackage{graphicx} %graphics files inclusion
+% \usepackage{amsmath} %advanced maths
+% \usepackage{amssymb} %additional math symbols
+
+\usepackage{dirtree} %directory tree visualisation
+
+% % list of acronyms
+% \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
+% \iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
+% \makeglossaries
+
+\newcommand{\tg}{\mathop{\mathrm{tg}}} %cesky tangens
+\newcommand{\cotg}{\mathop{\mathrm{cotg}}} %cesky cotangens
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% ODTUD DAL VSE ZMENTE
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\department{Katedra geomatiky}
+\title{Z{\' a}suvn{\' y} modul QGIS pro ter{\' e}nn{\' i} radia{\v c}n{\' i} pruzkum}
+\authorGN{Tereza} %(k�estn�) jm�no (jm�na) autora
+\authorFN{Kulovan{\' a}} %p��jmen� autora
+\authorWithDegrees{Tereza Kulovan{\' a}} %jm�no autora v�etn� sou�asn�ch akademick�ch titul�
+\supervisor{Ing. Martin Landa, Ph.D.}
+\acknowledgements{Dopl�te, m�te-li komu a za co d�kovat. V~opa�n�m p��pad� �pln� odstra�te tento p��kaz.}
+\abstractCS{V~n�kolika v�t�ch shr�te obsah a p��nos t�to pr�ce v~�e�tin�. Po p�e�ten� abstraktu by se �ten�� m�l m�t �ten�� dost informac� pro rozhodnut�, zda chce Va�i pr�ci ��st.}
+\abstractEN{Sem dopl�te ekvivalent abstraktu Va�� pr�ce v~angli�tin�.}
+\placeForDeclarationOfAuthenticity{V~Praze}
+\declarationOfAuthenticityOption{4} %volba Prohl��en� (��slo 1-6)
+\keywordsCS{Nahra�te seznamem kl��ov�ch slov v �e�tin� odd�len�ch ��rkou.}
+\keywordsEN{Nahra�te seznamem kl��ov�ch slov v angli�tin� odd�len�ch ��rkou.}
+% \website{http://site.example/thesis} %voliteln� URL pr�ce, objev� se v tir��i - �pln� odstra�te, nem�te-li URL pr�ce
+
+\begin{document}
+
+% \newacronym{CVUT}{{\v C}VUT}{{\v C}esk{\' e} vysok{\' e} u{\v c}en{\' i} technick{\' e} v Praze}
+% \newacronym{FSv}{FSv}{Fakulta stavebn{\' i}}
+
+\begin{introduction}
+	%sem napi�te �vod Va�� pr�ce
+\end{introduction}
+
+\chapter{C�l pr�ce}
+
+\chapter{Anal�za a n�vrh}
+
+\chapter{Realizace}
+
+\begin{conclusion}
+	%sem napi�te z�v�r Va�� pr�ce
+\end{conclusion}
+
+\bibliographystyle{csn690}
+\bibliography{mybibliographyfile}
+
+\appendix
+
+\chapter{Seznam pou�it�ch zkratek}
+% \printglossaries
+\begin{description}
+	\item[GUI] Graphical user interface
+	\item[XML] Extensible markup language
+\end{description}
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % Tuto kapitolu z v�sledn� pr�ce ODSTRA�TE.
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% 
+% \chapter{N�vod k~pou�it� t�to �ablony}
+% 
+% Tento dokument slou�� jako z�klad pro naps�n� z�v�re�n� pr�ce na Fakult� informa�n�ch technologi� �VUT v~Praze.
+% 
+% \section{V�b�r z�kladu}
+% 
+% Vyberte si �ablonu podle druhu pr�ce (bakal��sk�, diplomov�), jazyka (�e�tina, angli�tina) a k�dov�n� (ASCII, \mbox{UTF-8}, \mbox{ISO-8859-2} neboli latin2 a nebo \mbox{Windows-1250}). 
+% 
+% V~�esk� variant� naleznete �ablony v~souborech pojmenovan�ch ve form�tu pr�ce\_k�dov�n�.tex. Typ m��e b�t:
+% \begin{description}
+% 	\item[BP] bakal��sk� pr�ce,
+% 	\item[DP] diplomov� (magistersk�) pr�ce.
+% \end{description}
+% K�dov�n�, ve kter�m chcete ps�t, m��e b�t:
+% \begin{description}
+% 	\item[UTF-8] k�dov�n� Unicode,
+% 	\item[ISO-8859-2] latin2,
+% 	\item[Windows-1250] znakov� sada 1250 Windows.
+% \end{description}
+% V~p��pad� nejistoty ohledn� k�dov�n� doporu�ujeme n�sleduj�c� postup:
+% \begin{enumerate}
+% 	\item Otev�ete �ablony pro k�dov�n� UTF-8 v~editoru prost�ho textu, kter� chcete pro psan� pr�ce pou��t -- pokud m��ete texty s~diakritikou norm�ln� p�e��st, pou�ijte tuto �ablonu.
+% 	\item V~opa�n�m p��pad� postupujte d�le podle toho, jak� opera�n� syst�m pou��v�te:
+% 	\begin{itemize}
+% 		\item v~p��pad� Windows pou�ijte �ablonu pro k�dov�n� \mbox{Windows-1250},
+% 		\item jinak zkuste pou��t �ablonu pro k�dov�n� \mbox{ISO-8859-2}.
+% 	\end{itemize}
+% \end{enumerate}
+% 
+% 
+% V~anglick� variant� jsou �ablony pojmenovan� podle typu pr�ce, mo�nosti jsou:
+% \begin{description}
+% 	\item[bachelors] bakal��sk� pr�ce,
+% 	\item[masters] diplomov� (magistersk�) pr�ce.
+% \end{description}
+% 
+% \section{Pou�it� �ablony}
+% 
+% �ablona je ur�ena pro zpracov�n� syst�mem \LaTeXe{}. Text je mo�n� ps�t v~textov�m editoru jako prost� text, lze v�ak tak� vyu��t specializovan� editor pro \LaTeX{}, nap�. Kile.
+% 
+% Pro z�sk�n� tisknuteln�ho v�stupu z~takto vytvo�en�ho souboru pou�ijte p��kaz \verb|pdflatex|, kter�mu p�ed�te cestu k~souboru jako parametr. Vhodn� editor pro \LaTeX{} toto ud�l� za V�s. \verb|pdfcslatex| ani \verb|cslatex| \emph{nebudou} s~t�mito �ablonami fungovat.
+% 
+% V�ce informac� o~pou�it� syst�mu \LaTeX{} najdete nap�. v~\cite{wikilatex}.
+% 
+% \subsection{Typografie}
+% 
+% P�i psan� dodr�ujte typografick� konvence zvolen�ho jazyka. �esk� \uv{uvozovky} zapisujte pou�it�m p��kazu \verb|\uv|, kter�mu v~parametru p�ed�te text, jen� m� b�t v~uvozovk�ch. Anglick� otev�rac� uvozovky se v~\LaTeX{}u zad�vaj� jako dva zp�tn� apostrofy, uzav�rac� uvozovky jako dva apostrofy. �asto chybn� uv�d�n� symbol "{} (palce) nem� s~uvozovkami nic spole�n�ho.
+% 
+% D�le je t�eba zabr�nit zalomen� ��dky mezi n�kter�mi slovy, v~�e�tin� nap�. za jednop�smenn�mi p�edlo�kami a spojkami (vyjma \uv{a}). To doc�l�te vlo�en�m pru�n� nezalomiteln� mezery -- znakem \texttt{\textasciitilde}. V~tomto p��pad� to nen� t�eba d�lat ru�n�, lze pou��t program \verb|vlna|.
+% 
+% V�ce o~typografii viz \cite{kobltypo}.
+% 
+% \subsection{Obr�zky}
+% 
+% Pro umo�n�n� vkl�d�n� obr�zk� je vhodn� pou��t bal��ek \verb|graphicx|, samotn� vlo�en� se provede p��kazem \verb|\includegraphics|. Takto je mo�n� vkl�dat obr�zky ve form�tu PDF, PNG a JPEG jestli�e pou��v�te pdf\LaTeX{} nebo ve form�tu EPS jestli�e pou��v�te \LaTeX{}. Doporu�ujeme preferovat vektorov� obr�zky p�ed rastrov�mi (vyjma fotografi�).
+% 
+% \subsubsection{Z�sk�n� vhodn�ho form�tu}
+% 
+% Pro z�sk�n� vektorov�ch form�t� PDF nebo EPS z~jin�ch lze pou��t n�kter� z~vektorov�ch grafick�ch editor�. Pro p�evod rastrov�ho obr�zku na vektorov� lze pou��t rasterizaci, kterou mnoh� editory zvl�daj� (nap�. Inkscape). Pro konverze lze pou��t t�� n�stroje pro d�vkov� zpracov�n� b��n� dod�van� s~\LaTeX{}em, nap�. \verb|epstopdf|.
+% 
+% \subsubsection{Plovouc� prost�ed�}
+% 
+% P��kazem \verb|\includegraphics| lze obr�zky vkl�dat p��mo, doporu�ujeme v�ak pou��t plovouc� prost�ed�, konkr�tn� \verb|figure|. Nap��klad obr�zek \ref{fig:float} byl vlo�en t�mto zp�sobem. V�bec p�itom nevad�, kdy� je obr�zek um�st�n jinde, ne� bylo p�vodn� zam��leno -- je tomu tak hlavn� kv�li dodr�en� typografick�ch konvenc�. Nam�sto vynucov�n� konkr�tn� pozice obr�zku doporu�ujeme pou��vat odkazov�n� z~textu (dvojice p��kaz� \verb|\label| a \verb|\ref|).
+% 
+% \begin{figure}\centering
+% 	\includegraphics[width=0.5\textwidth, angle=30]{cvut-logo-bw}
+% 	\caption[P��klad obr�zku]{Uk�zkov� obr�zek v~plovouc�m prost�ed�}\label{fig:float}
+% \end{figure}
+% 
+% \subsubsection{Verze obr�zk�}
+% 
+% % Gnuplot BW i barevn�
+% M��e se hodit m�t v�ce verz� stejn�ho obr�zku, nap�. pro barevn� �i �ernob�l� tisk a nebo pro prezentaci. S~pomoc� n�kter�ch n�stroj� na generov�n� grafiky je to snadn�.
+% 
+% M�te-li nap��klad graf vytvo�en� v programu Gnuplot, m��ete jeho �ernob�lou variantu (viz obr. \ref{fig:gnuplot-bw}) vytvo�it parametrem \verb|monochrome dashed| p��kazu \verb|set term|. Barevnou variantu (viz obr. \ref{fig:gnuplot-col}) vhodnou na prezentace lze vytvo�it parametrem \verb|colour solid|.
+% 
+% \begin{figure}\centering
+% 	\includegraphics{gnuplot-bw}
+% 	\caption{�ernob�l� varianta obr�zku generovan�ho programem Gnuplot}\label{fig:gnuplot-bw}
+% \end{figure}
+% 
+% \begin{figure}\centering
+% 	\includegraphics{gnuplot-col}
+% 	\caption{Barevn� varianta obr�zku generovan�ho programem Gnuplot}\label{fig:gnuplot-col}
+% \end{figure}
+% 
+% 
+% \subsection{Tabulky}
+% 
+% Tabulky lze zad�vat r�zn�, nap�. v~prost�ed� \verb|tabular|, av�ak pro jejich vkl�d�n� plat� to sam�, co pro obr�zky -- pou�ijte plovouc� prost�ed�, v~tomto p��pad� \verb|table|. Nap��klad tabulka \ref{tab:matematika} byla vlo�ena t�mto zp�sobem.
+% 
+% \begin{table}\centering
+% 	\caption[P��klad tabulky]{Zad�v�n� matematiky}\label{tab:matematika}
+% 	\begin{tabular}{|l|l|c|c|}\hline
+% 		Typ		& Prost�ed�		& \LaTeX{}ovsk� zkratka	& \TeX{}ovsk� zkratka	\tabularnewline \hline \hline
+% 		Text		& \verb|math|		& \verb|\(...\)|	& \verb|$...$|		\tabularnewline \hline
+% 		Displayed	& \verb|displaymath|	& \verb|\[...\]|	& \verb|$$...$$|	\tabularnewline \hline
+% 	\end{tabular}
+% \end{table}
+% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\chapter{Obsah p�ilo�en�ho CD}
+
+%upravte podle skutecnosti
+
+\begin{figure}
+	\dirtree{%
+		.1 readme.txt\DTcomment{stru�n� popis obsahu CD}.
+		.1 exe\DTcomment{adres�� se spustitelnou formou implementace}.
+		.1 src.
+		.2 impl\DTcomment{zdrojov� k�dy implementace}.
+		.2 thesis\DTcomment{zdrojov� forma pr�ce ve form�tu \LaTeX{}}.
+		.1 text\DTcomment{text pr�ce}.
+		.2 thesis.pdf\DTcomment{text pr�ce ve form�tu PDF}.
+		.2 thesis.ps\DTcomment{text pr�ce ve form�tu PS}.
+	}
+\end{figure}
+
+\end{document}
