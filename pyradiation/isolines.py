@@ -82,6 +82,9 @@ class RadiationIsolines:
         region_box.AddPoint(topLeftX, bottomRightY)
         region_box.AddPoint(topLeftX, topLeftY)
 
+        # region_point = ogr.Geometry(ogr.wkbMultiPoint)
+        region_point = (topLeftX, bottomRightX, topLeftY, bottomRightY)
+
         # Put geometry inside a feature
         # layerDefinition = self.output_layer.GetLayerDefn()
         # featureIndex = 0
@@ -92,4 +95,4 @@ class RadiationIsolines:
         # # Create the feature in the layer (shapefile)
         # self.output_layer.CreateFeature(feature)
 
-        return region_box
+        return region_box, region_point
