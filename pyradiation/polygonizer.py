@@ -51,7 +51,7 @@ class RadiationPolygonizer:
         """
 
         if not geom.IsRing():
-            print("neuzavrena")
+            # print("neuzavrena")
             return []
         else:
             return geom
@@ -131,12 +131,21 @@ class RadiationPolygonizer:
         if geom  == []:
             pass
         else:
-            pass
-            # ring = ogr.Geometry(ogr.wkbMultiLineString)
-            # ring.ForceToMultiLineString(geom)
-            # print ring.ExportToWkt()
-            # poly.BuildPolygonFromEdges(ring)
+            ring = ogr.ForceToMultiLineString(geom)
+            poly = ogr.BuildPolygonFromEdges(ring, 0, 1)
+            # print poly
 
+            # Put geometry inside a feature
+            layerDefinition = self.output_layer.GetLayerDefn()
+            featureIndex = 0
+            feature = ogr.Feature(layerDefinition)
+            feature.SetGeometry(poly)
+            feature.SetFID(featureIndex)
+
+            # Create the feature in the layer (shapefile)
+            self.output_layer.CreateFeature(feature)
+
+        # return poly
 
     def _write_output(self):
         # check if destination is defined
@@ -161,7 +170,6 @@ class RadiationPolygonizer:
 
             geom = feat.GetGeometryRef()
             left_box, bottom_box, right_box, top_box = self._count_intersection(geom, region_point, region_box, left_box, bottom_box, right_box, top_box)
-
 
         lines_layer.ResetReading()
         while True:
