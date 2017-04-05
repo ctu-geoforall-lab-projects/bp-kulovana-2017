@@ -50,75 +50,72 @@ class RadiationPolygonizer:
         :return: closed geometry
         """
 
-
-
-
         if not geom.IsRing():
             print("neuzavrena")
             return []
         else:
             return geom
 
-    def _count_intersection(self, geom, box_point, box):
+    def _count_intersection(self, geom, box_point, box, left_box, bottom_box, right_box, top_box):
         """
+        Count intersection of  input geometry and region_box. Add intersection point to side_box and sort points.
 
         :param geom: input lines geometry (defined as LineStrings)
         :param box: region box geometry (defined as Linestring)
 
         :return: region box with new points at intersection of unclosed lines
         """
+
         leftX = box_point[0]
         rightX = box_point[1]
         topY = box_point[2]
         bottomY = box_point[3]
-
-        p1 = ogr.Geometry(ogr.wkbPoint)
-        p1.AddPoint(100, 100)
-        p2 = ogr.Geometry(ogr.wkbPoint)
-        p2.AddPoint(1, 50)
-
-        points = [p1, p2]
-
-        # for p in sorted(points, key=lambda point: point.GetX):
-        #     print (p.GetX(), p.GetY())
-
-        box_point = ogr.Geometry(ogr.wkbMultiPoint)
-        box_point.AddPoint(1, 0)
-        box_point.AddPoint(1, 1)
-        box_point.AddPoint(1, 3)
-        x = 1
-        y = 2
-        # if x == 1
-
-        left_box = ogr.Geometry(ogr.wkbMultiPoint)
-        point1 = ogr.Geometry(ogr.wkbPoint)
-        point1.AddPoint(leftX, topY)
-        left_box.AddGeometry(point1)
-        point1.AddPoint(leftX, bottomY)
-        left_box.AddGeometry(point1)
 
         if not geom.IsRing():
             intersection = geom.Intersection(box)
             print intersection.ExportToWkt()
 
             for point in intersection:
-                # print ("X-ova bodu: ", point.GetX())
                 if point.GetX() == leftX:
-                    point1.AddPoint(point.GetX(), point.GetY())
-                    left_box.AddGeometry(point1)
-                    print("probehlo")
-            for point in left_box:
-                sorted(left_box, key=lambda point: point.GetX)
+                    left_box = self._add_point(point, left_box, 1)
+                if point.GetX() == rightX:
+                    right_box = self._add_point(point, right_box, 1)
+                if point.GetY() == topY:
+                    top_box = self._add_point(point, top_box, 2)
+                if point.GetY() == bottomY:
+                    bottom_box = self._add_point(point, bottom_box, 2)
+                else:
+                    print("Non-ring feature.")
 
-            print left_box.GetGeometryCount()
-            print left_box.ExportToWkt()
+        # for i in range(intersection.GetGeometryCount()):
 
-            # for point in intersection:
-            # box.AddPoint(point.GetX(), point.GetY())
+        return left_box, bottom_box, right_box, top_box
 
-            # for i in range(intersection.GetGeometryCount()):
+    def _add_point(self, point, side_box, C):
+        """
+        Add intersection point to side_box and sort points.
 
-        return box_point
+        :param point: input point
+        :param side_box: input points of one side of region_box (defined as MultiPoint)
+        :param C: sorting rule (1 -> Y, 2 -> X)
+        :return: sorted side_box with new point
+        """
+
+        point_to_multi = ogr.Geometry(ogr.wkbPoint)
+        point_to_multi.AddPoint(point.GetX(), point.GetY())
+        side_box.AddGeometry(point_to_multi)
+        if C == 2:
+            # for point in side_box:
+            sorted(side_box, key=lambda p: p.GetX)
+        else:
+            # for point in side_box:
+            sorted(side_box, key=lambda p: p.GetY)
+        # print ('srovnano {}'.format(side_box))
+        print ("C: ", C)
+        # print side_box.GetGeometryCount()
+
+        return side_box
+
 
     def _create_polygon(self, geom):
         """Create polygon from closed linestring geometry.
@@ -147,14 +144,14 @@ class RadiationPolygonizer:
 
     def polygonize(self):
         # 0. create region box geometry from input raster
-        region_box, region_point = self.input_lines.box()
+        region_box, region_point, left_box, bottom_box, right_box, top_box = self.input_lines.box()
         print (region_box)
 
         # poly = ogr.Geometry(ogr.wkbPolygon)
         # for keyName in inspect.getmembers(poly):
         #     print keyName
 
-        # create intersection points (lines x box)
+        # create intersection points (lines x box) and add them to region_box
         lines_layer = self.input_lines.layer()
         lines_layer.ResetReading()
         while True:
@@ -163,7 +160,8 @@ class RadiationPolygonizer:
                 break
 
             geom = feat.GetGeometryRef()
-            intersection = self._count_intersection(geom, region_point, region_box)
+            left_box, bottom_box, right_box, top_box = self._count_intersection(geom, region_point, region_box, left_box, bottom_box, right_box, top_box)
+
 
         lines_layer.ResetReading()
         while True:
