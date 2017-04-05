@@ -6,4 +6,7 @@
 *.log
 *.out
 *.toc
+*.bbl
+*.blg
+text/tereza-kulovana-bp-2017.pdf
 *~
