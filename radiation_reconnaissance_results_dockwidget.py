@@ -24,7 +24,15 @@
 import os
 
 from PyQt4 import QtGui, uic
-from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtCore import pyqtSignal, QSettings, QFileInfo
+from PyQt4.QtGui import QFileDialog
+from qgis.core import QgsProviderRegistry
+from qgis.gui import QgsMapLayerComboBox, QgsMapLayerProxyModel
+from qgis.utils import QgsMessageBar, iface
+from osgeo import gdal, ogr
+
+from pyradiation import isolines
+from pyradiation import polygonizer
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'radiation_reconnaissance_results_dockwidget_base.ui'))
@@ -44,7 +52,33 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
 
+        self.settings = QSettings("CTU", "GRMplugin")
+
+        # Save reference to the QGIS interface
+        self.iface = iface
+
+        # Set filter for QgsMapLayerComboBox
+        self.raster_box.setFilters(QgsMapLayerProxyModel.RasterLayer)
+
+        self.load_raster.clicked.connect(self.onLoadRaster)
+        self.solve_button.setEnabled(False)
+        self.report_button.clicked.connect(self.onReportButton)
+
     def closeEvent(self, event):
         self.closingPlugin.emit()
         event.accept()
 
+    def onLoadRaster(self):
+        """Open 'Add raster layer dialog'."""
+        sender = u'{}-lastUserFilePath'.format(self.sender().objectName())
+        lastUsedFilePath = self.settings.value(sender, '')
+
+        fileName = QFileDialog.getOpenFileName(self,self.tr(u'Open raster'),
+                                               self.tr(u'{}').format(lastUsedFilePath),
+                                               QgsProviderRegistry.instance().fileRasterFilters())
+        if fileName:
+            self.iface.addRasterLayer(fileName, QFileInfo(fileName).baseName())
+            self.settings.setValue(sender, os.path.dirname(fileName))
+
+    def onReportButton(self):
+        pass
