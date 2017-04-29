@@ -56,66 +56,53 @@ class RadiationPolygonizer:
         else:
             return geom
 
-    def _count_intersection(self, geom, box_point, box, left_box, bottom_box, right_box, top_box):
+    def _count_intersection(self, geom, box, intersection):
         """
-        Count intersection of  input geometry and region_box. Add intersection point to side_box and sort points.
+        Count intersection of  input geometry and region_box. Add intersection point to a list.
 
         :param geom: input lines geometry (defined as LineStrings)
         :param box: region box geometry (defined as Linestring)
+        :param intersection: list of intersection points
 
-        :return: region box with new points at intersection of unclosed lines
+        :return: list of intersection points between region_box and unclosed lines
         """
-
-        leftX = box_point[0]
-        rightX = box_point[1]
-        topY = box_point[2]
-        bottomY = box_point[3]
 
         if not geom.IsRing():
-            intersection = geom.Intersection(box)
-            print intersection.ExportToWkt()
+            if not geom.Intersects(box):
+                print ("Non-ring feature!!")
+            else:
+                intersection_point = geom.Intersection(box)
+                for point in intersection_point:
+                    intersection.append([point.GetX(), point.GetY()])
 
-            for point in intersection:
-                if point.GetX() == leftX:
-                    left_box = self._add_point(point, left_box, 1)
-                if point.GetX() == rightX:
-                    right_box = self._add_point(point, right_box, 1)
-                if point.GetY() == topY:
-                    top_box = self._add_point(point, top_box, 2)
-                if point.GetY() == bottomY:
-                    bottom_box = self._add_point(point, bottom_box, 2)
-                else:
-                    print("Non-ring feature.")
+        return intersection
 
-        # for i in range(intersection.GetGeometryCount()):
-
-        return left_box, bottom_box, right_box, top_box
-
-    def _add_point(self, point, side_box, C):
+    def _sort_intersection(self, intersection, intersection_sorted, sort_coor, a, b, ascending):
         """
-        Add intersection point to side_box and sort points.
+        Sort intersection points and save them to a new list in anticlockwise order.
+        Remove sorted points from unsorted list.
 
-        :param point: input point
-        :param side_box: input points of one side of region_box (defined as MultiPoint)
-        :param C: sorting rule (1 -> Y, 2 -> X)
-        :return: sorted side_box with new point
+        :param intersection: input unsorted intersection points (defined as List)
+        :param intersection_sorted: input sorted intersection points (defined as List)
+        :param sort_coor: coordinate for comparison
+        :param a: coordinate by which a list should be sorted (X=0, Y=1)
+        :param b: coordinate by which a list should be compared (X=0, Y=1)
+        :param ascending: order of sorting (ascending=1, descending=0)
+
+        :return: list of unsorted intersection points, list of sorted intersection points
         """
 
-        point_to_multi = ogr.Geometry(ogr.wkbPoint)
-        point_to_multi.AddPoint(point.GetX(), point.GetY())
-        side_box.AddGeometry(point_to_multi)
-        if C == 2:
-            # for point in side_box:
-            sorted(side_box, key=lambda p: p.GetX)
-        else:
-            # for point in side_box:
-            sorted(side_box, key=lambda p: p.GetY)
-        # print ('srovnano {}'.format(side_box))
-        print ("C: ", C)
-        # print side_box.GetGeometryCount()
+        if ascending == 1:
+            intersection_sort = sorted(intersection, key=lambda p: p[a])
+        elif ascending == 0:
+            intersection_sort = sorted(intersection, key=lambda p: p[a], reverse=True)
 
-        return side_box
+        for p in intersection_sort:
+            if p[b] == sort_coor:
+                intersection_sorted.append(p)
+                intersection.remove(p)
 
+        return intersection, intersection_sorted
 
     def _create_polygon(self, geom):
         """Create polygon from closed linestring geometry.
@@ -153,14 +140,16 @@ class RadiationPolygonizer:
 
     def polygonize(self):
         # 0. create region box geometry from input raster
-        region_box, region_point, left_box, bottom_box, right_box, top_box = self.input_lines.box()
+        region_box, region_point = self.input_lines.box()
+        # region_point = (leftX, rightX, topY, bottomY)
         print (region_box)
 
         # poly = ogr.Geometry(ogr.wkbPolygon)
         # for keyName in inspect.getmembers(poly):
         #     print keyName
 
-        # create intersection points (lines x box) and add them to region_box
+        # create intersection points (lines x box) and add them to intersection list (unsorted)
+        intersection = []
         lines_layer = self.input_lines.layer()
         lines_layer.ResetReading()
         while True:
@@ -169,8 +158,25 @@ class RadiationPolygonizer:
                 break
 
             geom = feat.GetGeometryRef()
-            left_box, bottom_box, right_box, top_box = self._count_intersection(geom, region_point, region_box, left_box, bottom_box, right_box, top_box)
+            intersection = self._count_intersection(geom, region_box, intersection)
 
+        # Sort intersection points in anticlockwise order
+        intersection_sorted = []
+        intersection_sorted.append([region_point[0], region_point[2]])  # add top left corner
+        # sort points on the left side
+        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[0], 1, 0, 0)
+        intersection_sorted.append([region_point[0], region_point[3]])  # add bottom left corner
+        # sort points on the bottom side
+        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[3], 0, 1, 1)
+        intersection_sorted.append([region_point[1], region_point[3]])  # add bottom right corner
+        # sort points on the right side
+        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[1], 1, 0, 1)
+        intersection_sorted.append([region_point[1], region_point[2]])  # add top right corner
+        # sort points on the top side
+        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[2], 0, 1, 0)
+
+        print ("serazene pruseciky: ", intersection_sorted)
+        
         lines_layer.ResetReading()
         while True:
             feat = lines_layer.GetNextFeature()
