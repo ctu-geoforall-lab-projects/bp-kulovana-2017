@@ -1,6 +1,5 @@
 import os
 import tempfile
-import inspect
 
 from osgeo import ogr
 
@@ -37,21 +36,38 @@ class RadiationPolygonizer:
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
 
-    def _close_line(self, geom, box):
+    def _close_line(self, geom, intersection, line_list, line_id):
         """Close lines.
 
         If start point differs from end point than line is close by
         region box geometry. Intersection with region box is computed
         in 2D.
 
-        :param lines: input lines geometry (defined as LineStrings)
-        :param box: region box geometry (defined as Linestring)
+        :param geom: input lines geometry (defined as LineStrings)
+        :param intersection:
 
         :return: closed geometry
         """
 
         if not geom.IsRing():
-            # print("neuzavrena")
+            if line_id == 16: # non-ring feature
+                return []
+            multiline = ogr.Geometry(ogr.wkbMultiLineString)
+            multiline.AddGeometry(geom)
+            for info in line_list:
+                if info[0] == line_id:
+                    start_line = info[1]
+                    end_line = info[2]
+                    print end_line
+            flagInterFound = False
+            for inter in intersection:
+                if inter[0] == end_line:
+                    print inter[0]
+                    print end_line
+                    flagInterFound = True
+                if flagInterFound:
+                    print inter
+
             return []
         else:
             return geom
@@ -157,7 +173,7 @@ class RadiationPolygonizer:
 
         # create intersection points (lines x box) and add them to intersection list (unsorted)
         intersection = []  # [int_id, X, Y, Z]
-        int_id = 5  # id 0-4 -> box vertices
+        int_id = 4  # id 0-3 -> box vertices
         line_list = []  # [line_id, start_point_id, end_point_id]
         lines_layer = self.input_lines.layer()
         lines_layer.ResetReading()
@@ -189,6 +205,7 @@ class RadiationPolygonizer:
 
         print ("serazene pruseciky: ", intersection_sorted)
 
+        line_id = 0
         lines_layer.ResetReading()
         while True:
             feat = lines_layer.GetNextFeature()
@@ -198,7 +215,8 @@ class RadiationPolygonizer:
             geom = feat.GetGeometryRef()
             # 1. close open isolines (based on bbox)
             # print warning if isolines cannot be closed
-            geom_closed = self._close_line(geom, region_box)
+            geom_closed = self._close_line(geom, intersection_sorted, line_list, line_id)
+            line_id = line_id + 1
 
             # 2. perform generalization if defined
 
