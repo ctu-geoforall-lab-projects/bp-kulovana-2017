@@ -77,9 +77,9 @@ class RadiationIsolines:
         # Create region box geometry
         region_box = ogr.Geometry(ogr.wkbLineString)
         region_box.AddPoint(topLeftX, topLeftY)
-        region_box.AddPoint(bottomRightX, topLeftY)
-        region_box.AddPoint(bottomRightX, bottomRightY)
         region_box.AddPoint(topLeftX, bottomRightY)
+        region_box.AddPoint(bottomRightX, bottomRightY)
+        region_box.AddPoint(bottomRightX, topLeftY)
         region_box.AddPoint(topLeftX, topLeftY)
 
         region_point = (topLeftX, bottomRightX, topLeftY, bottomRightY)
