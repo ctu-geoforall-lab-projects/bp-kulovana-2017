@@ -5,6 +5,7 @@ from osgeo import ogr
 
 from .exception import RadiationError
 
+
 class MyLine:
     def __init__(self, id, start, end, geom):
         self.id = id
@@ -52,44 +53,44 @@ class RadiationPolygonizer:
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
 
-    def _close_line(self, geom, line_list, line_id):
+    def _close_line(self, geom, line_id):
         """Close lines.
 
-        If start point differs from end point than line is close by
-        region box geometry. Intersection with region box is computed
-        in 2D.
+        If start point differs from end point than line is closed by
+        region box geometry and if needed by other lines.
 
         :param geom: input lines geometry (defined as LineStrings)
-        :param intersection:
+        :param line_id: ID of an input geometry
 
         :return: closed geometry
         """
 
         if not geom.IsRing():
-            if line_id == 16: # non-ring feature
+            if line_id == 16:  # non-ring feature
                 return []
             multiline = ogr.Geometry(ogr.wkbMultiLineString)
             multiline.AddGeometry(geom)
             z = geom.GetZ(0)
-            for line in line_list:
+            for line in self.line_list:
                 if line.id == line_id:
                     start_main = line.start_point
                     end_main = line.end_point
                     print " "
                     print ('Main line: start: {}, end: {}'.format(start_main, end_main))
 
-            multiline, line_id_next, geom_closed = self._find_next_point(z, end_main, start_main, multiline)
+            multiline, line_last_id, geom_closed = self._find_next_point(z, end_main, start_main, multiline)
 
             while geom_closed == 0:
-                for line in line_list:
-                    if line.start_point == line_id_next:
+                for line in self.line_list:
+                    if line.start_point == line_last_id:
                         start_line_next = line.start_point
                         end_line_next = line.end_point
                         multiline.AddGeometry(line.geom)
                         print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
-                        multiline, line_id_next, geom_closed = self._find_next_point(z, end_line_next, start_main, multiline)
+                        multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
+                                                                                     multiline)
                         break
-                    elif line.end_point == line_id_next:
+                    elif line.end_point == line_last_id:
                         start_line_next = line.end_point
                         end_line_next = line.start_point
                         geom_reverse = ogr.Geometry(ogr.wkbLineString)
@@ -98,7 +99,8 @@ class RadiationPolygonizer:
                             geom_reverse.AddPoint(pt[0], pt[1], pt[2])
                         multiline.AddGeometry(geom_reverse)
                         print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
-                        multiline, line_id_next, geom_closed = self._find_next_point(z, end_line_next, start_main, multiline)
+                        multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
+                                                                                     multiline)
                         break
             else:
                 print "ukonceny cyklus"
@@ -107,6 +109,21 @@ class RadiationPolygonizer:
             return geom
 
     def _find_next_point(self, z, id_prev, start_main, multiline):
+        '''
+        Find next point with same Z coordinate or with Z == 0.
+        If Z is 0 then add new line between last point and box vertex to multiline.
+        If Z coordinate of new point is the same as of the multiline then add new line between last point and new
+        point to multiline.
+        If end point of new line is equal to the start point of multline then geometry is closed.
+
+        :param z: Z coordinate of multiline
+        :param id_prev: ID of last point in multiline
+        :param start_main: ID of start point of multiline
+        :param multiline: input lines geometry (defined as MultiLineStrings)
+
+        :return: multiline geometry, ID of the last point in multiline, info if geometry is closed
+        '''
+
         flag_inter_found = False
         for inter in self.intersection_sorted:
             if inter.id == id_prev:
@@ -121,8 +138,8 @@ class RadiationPolygonizer:
                     line1.AddPoint(end_line_x, end_line_y)
                     line1.AddPoint(inter.x, inter.y)
                     multiline.AddGeometry(line1)
-                    print ('Next line: start: {}, end: {}'.format(id_prev , inter.id))
-                    line_id_next = inter.id
+                    print ('Next line: start: {}, end: {}'.format(id_prev, inter.id))
+                    line_last_id = inter.id
                     if inter.id == start_main:
                         print "geometry closed"
                         geom_closed = 1
@@ -138,20 +155,17 @@ class RadiationPolygonizer:
                     multiline.AddGeometry(line1)
                     print("pridan rohovy bod")
 
-        return multiline, line_id_next, geom_closed
+        return multiline, line_last_id, geom_closed
 
-    def _count_intersection(self, geom, box, line_list, line_id):
+    def _count_intersection(self, geom, box, line_id):
         """
-        Count intersection of  input geometry and region_box. Add intersection point to a list.
+        Count intersection of input geometry and region_box in 2D.
+        Add intersection point to a list in format [ID, X, Y, Z].
+        Add info about input geometry to a list in format [ID of geometry, ID of start point, ID of end point, geometry]
 
         :param geom: input lines geometry (defined as LineStrings)
         :param box: region box geometry (defined as Linestring)
-        :param intersection: list of intersection points
-        :param int_id: ID of an intersection point
-        :param line_list: list of isolines info [ID of a line, ID of start point, ID of end point]
         :param line_id: ID of an input geometry
-
-        :return: list of intersection points between region_box and unclosed lines
         """
 
         if not geom.IsRing():
@@ -163,29 +177,23 @@ class RadiationPolygonizer:
                 for i in range(0, geom.GetPointCount()):
                     pt = geom.GetPoint(i)
                     geometry.AddPoint(pt[0], pt[1], pt[2])
-                new_line = MyLine(line_id, self.intersection_id, self.intersection_id+1, geometry)
-                line_list.append(new_line)
+                new_line = MyLine(line_id, self.intersection_id, self.intersection_id + 1, geometry)
+                self.line_list.append(new_line)
                 z = geom.GetZ(0)
                 for point in intersection_point:
                     new_inter = Intersection(self.intersection_id, point.GetX(), point.GetY(), z)
                     self.intersection_list.append(new_inter)
                     self.intersection_id += 1
 
-        return line_list
-
     def _sort_intersection(self, sort_coor, sort, compare, ascend):
         """
-        Sort intersection points and save them to a new list in anticlockwise order.
+        Sort intersection points and save them to a sorted list in anticlockwise order.
         Remove sorted points from unsorted list.
 
-        :param intersection_list: input unsorted intersection points (defined as List)
-        :param intersection_sorted: input sorted intersection points (defined as List)
         :param sort_coor: coordinate for comparison
         :param sort: coordinate by which a list should be sorted (X=1, Y=2)
         :param compare: coordinate by which a list should be compared (X=1, Y=2)
         :param ascend: order of sorting (ascending=1, descending=0)
-
-        :return: list of unsorted intersection points, list of sorted intersection points
         """
 
         if ascend == 1 and sort == 1:
@@ -216,11 +224,12 @@ class RadiationPolygonizer:
         is raised.
 
         :param geom: input linestring geometry
+        :param line_id: ID of an input geometry
 
         :return: polygon geometry
         """
 
-        if geom  == []:
+        if geom == []:
             pass
         else:
             ring = ogr.ForceToMultiLineString(geom)
@@ -237,7 +246,7 @@ class RadiationPolygonizer:
             # Create the feature in the layer (shapefile)
             self.output_layer.CreateFeature(feature)
 
-        # return poly
+            return poly
 
     def _write_output(self):
         # check if destination is defined
@@ -252,13 +261,13 @@ class RadiationPolygonizer:
         self.intersection_list = []
         self.intersection_id = 0
         # Add region_box corners to intersection_list
-        for i in range(0, region_box.GetPointCount()-1):
+        for i in range(0, region_box.GetPointCount() - 1):
             pt = region_box.GetPoint(i)
             new_inter = Intersection(self.intersection_id, pt[0], pt[1], pt[2])
             self.intersection_list.append(new_inter)
             self.intersection_id += 1
 
-        line_list = []
+        self.line_list = []
         lines_layer = self.input_lines.layer()
         lines_layer.ResetReading()
         while True:
@@ -269,7 +278,7 @@ class RadiationPolygonizer:
             geom_id = feat.id
             geom = feat.GetGeometryRef()
 
-            line_list = self._count_intersection(geom, region_box, line_list, geom_id)
+            self._count_intersection(geom, region_box, geom_id)
 
         # 2. sort intersection points in anticlockwise order
         self.intersection_sorted = []
@@ -282,7 +291,7 @@ class RadiationPolygonizer:
         # sort points on the top side
         self._sort_intersection(region_point[2], 1, 2, 0)
 
-        self.intersection_sorted = self.intersection_sorted + self.intersection_sorted # docasne reseni
+        self.intersection_sorted = self.intersection_sorted + self.intersection_sorted  # docasne reseni
 
         lines_layer.ResetReading()
         while True:
@@ -294,7 +303,7 @@ class RadiationPolygonizer:
             geom = feat.GetGeometryRef()
             # 3. close open isolines (based on bbox)
             # print warning if isolines cannot be closed
-            geom_closed = self._close_line(geom, line_list, geom_id)
+            geom_closed = self._close_line(geom, geom_id)
 
             # 4. perform generalization if defined
             if self.generalizer:
