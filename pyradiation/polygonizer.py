@@ -54,51 +54,77 @@ class RadiationPolygonizer:
                 return []
             multiline = ogr.Geometry(ogr.wkbMultiLineString)
             multiline.AddGeometry(geom)
-
+            z = geom.GetZ(0)
             for line in line_list:
                 if line.id == line_id:
-                    start_line = line.start_point
-                    end_line = line.end_point
-                    print ('end line: ', end_line)
-            flag_inter_found = False
-            z = geom.GetZ(0)
-            for inter in intersection:
-                if inter.id == end_line:
-                    flag_inter_found = True
-                    end_line_x = inter.x
-                    end_line_y = inter.y
-                    continue
-                if flag_inter_found:
-                    print inter.id
-                    if inter.z == z:
-                        line1 = ogr.Geometry(ogr.wkbLineString)
-                        line1.AddPoint(end_line_x, end_line_y)
-                        line1.AddPoint(inter.x, inter.y)
-                        multiline.AddGeometry(line1)
-                        print("nalezen bod dalsi lajny")
-                        line_id_next = inter.id
-                        break
-                    elif inter.z == 0:
-                        line1 = ogr.Geometry(ogr.wkbLineString)
-                        line1.AddPoint(end_line_x, end_line_y)
-                        line1.AddPoint(inter.x, inter.y)
-                        multiline.AddGeometry(line1)
-                        print("pridan rohovy bod")
-                    else:
-                        continue
-            print "vyskoceno z for cyklu"
-            for line in line_list:
-                if line_id_next:
-                    if line.id == line_id_next:
+                    start_main = line.start_point
+                    end_main = line.end_point
+                    print " "
+                    print ('Main line: start: {}, end: {}'.format(start_main, end_main))
+
+            multiline, line_id_next, geom_closed = self._find_next_point(intersection, z, end_main, start_main, multiline)
+
+            while geom_closed == 0:
+                for line in line_list:
+                    if line.start_point == line_id_next:
                         start_line_next = line.start_point
                         end_line_next = line.end_point
-                        print ('end line next: ', end_line)
-                        #multiline.AddGeometry(line.geom)
-            return []
+                        multiline.AddGeometry(line.geom)
+                        print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
+                        multiline, line_id_next, geom_closed = self._find_next_point(intersection, z, end_line_next, start_main, multiline)
+                        break
+                    elif line.end_point == line_id_next:
+                        start_line_next = line.end_point
+                        end_line_next = line.start_point
+                        geom_reverse = ogr.Geometry(ogr.wkbLineString)
+                        for i in range(line.geom.GetPointCount(), 0, -1):
+                            pt = line.geom.GetPoint(i - 1)
+                            geom_reverse.AddPoint(pt[0], pt[1], pt[2])
+                        multiline.AddGeometry(geom_reverse)
+                        print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
+                        multiline, line_id_next, geom_closed = self._find_next_point(intersection, z, end_line_next, start_main, multiline)
+                        break
+            else:
+                print "ukonceny cyklus"
+            return multiline
         else:
             return geom
 
-    def _count_intersection(self, geom, box, intersection, int_id, line_list, line_id):
+    def _find_next_point(self, intersection, z, id_prev, start_main, multiline):
+        flag_inter_found = False
+        for inter in intersection:
+            if inter.id == id_prev:
+                flag_inter_found = True
+                end_line_x = inter.x
+                end_line_y = inter.y
+                continue
+            if flag_inter_found:
+                # print inter.id
+                if inter.z == z:
+                    line1 = ogr.Geometry(ogr.wkbLineString)
+                    line1.AddPoint(end_line_x, end_line_y)
+                    line1.AddPoint(inter.x, inter.y)
+                    multiline.AddGeometry(line1)
+                    print ('Next line: start: {}, end: {}'.format(id_prev , inter.id))
+                    line_id_next = inter.id
+                    if inter.id == start_main:
+                        print "geometry closed"
+                        geom_closed = 1
+                        break
+                    else:
+                        print("nalezen bod dalsi lajny")
+                        geom_closed = 0
+                        break
+                elif inter.z == 0:
+                    line1 = ogr.Geometry(ogr.wkbLineString)
+                    line1.AddPoint(end_line_x, end_line_y)
+                    line1.AddPoint(inter.x, inter.y)
+                    multiline.AddGeometry(line1)
+                    print("pridan rohovy bod")
+
+        return multiline, line_id_next, geom_closed
+
+    def _count_intersection(self, geom, box, intersection_list, int_id, line_list, line_id):
         """
         Count intersection of  input geometry and region_box. Add intersection point to a list.
 
@@ -117,23 +143,27 @@ class RadiationPolygonizer:
                 print ("Non-ring feature!!", line_id)
             else:
                 intersection_point = geom.Intersection(box)
-                new_line = MyLine(line_id, int_id, int_id+1, geom)
+                geometry = ogr.Geometry(ogr.wkbLineString)
+                for i in range(0, geom.GetPointCount()):
+                    pt = geom.GetPoint(i)
+                    geometry.AddPoint(pt[0], pt[1], pt[2])
+                new_line = MyLine(line_id, int_id, int_id+1, geometry)
                 line_list.append(new_line)
                 z = geom.GetZ(0)
                 for point in intersection_point:
                     new_inter = Intersection(int_id, point.GetX(), point.GetY(), z)
-                    intersection.append(new_inter)
+                    intersection_list.append(new_inter)
                     int_id = int_id+1
 
         line_id = line_id+1
-        return intersection, int_id, line_list, line_id
+        return intersection_list, int_id, line_list, line_id
 
-    def _sort_intersection(self, intersection, intersection_sorted, sort_coor, sort, compare, ascend):
+    def _sort_intersection(self, intersection_list, intersection_sorted, sort_coor, sort, compare, ascend):
         """
         Sort intersection points and save them to a new list in anticlockwise order.
         Remove sorted points from unsorted list.
 
-        :param intersection: input unsorted intersection points (defined as List)
+        :param intersection_list: input unsorted intersection points (defined as List)
         :param intersection_sorted: input sorted intersection points (defined as List)
         :param sort_coor: coordinate for comparison
         :param sort: coordinate by which a list should be sorted (X=1, Y=2)
@@ -144,13 +174,13 @@ class RadiationPolygonizer:
         """
 
         if ascend == 1 and sort == 1:
-            intersection_sort = sorted(intersection, key=lambda p: p.x)
+            intersection_sort = sorted(intersection_list, key=lambda p: p.x)
         elif ascend == 1 and sort == 2:
-            intersection_sort = sorted(intersection, key=lambda p: p.y)
+            intersection_sort = sorted(intersection_list, key=lambda p: p.y)
         elif ascend == 0 and sort == 1:
-            intersection_sort = sorted(intersection, key=lambda p: p.x, reverse=True)
+            intersection_sort = sorted(intersection_list, key=lambda p: p.x, reverse=True)
         elif ascend == 0 and sort == 2:
-            intersection_sort = sorted(intersection, key=lambda p: p.y, reverse=True)
+            intersection_sort = sorted(intersection_list, key=lambda p: p.y, reverse=True)
         else:
             print "problem s razenim"
 
@@ -158,13 +188,13 @@ class RadiationPolygonizer:
             if compare == 1:
                 if p.x == sort_coor:
                     intersection_sorted.append(p)
-                    intersection.remove(p)
+                    intersection_list.remove(p)
             elif compare == 2:
                 if p.y == sort_coor:
                     intersection_sorted.append(p)
-                    intersection.remove(p)
+                    intersection_list.remove(p)
 
-        return intersection, intersection_sorted
+        return intersection_list, intersection_sorted
 
     def _create_polygon(self, geom):
         """Create polygon from closed linestring geometry.
@@ -207,7 +237,7 @@ class RadiationPolygonizer:
         print (region_box)
 
         # create intersection points (lines x box) and add them to intersection list (unsorted)
-        intersection = []  # [int_id, X, Y, Z]
+        intersection_list = []  # [int_id, X, Y, Z]
         int_id = 4  # id 0-3 -> box vertices
         line_list = []
         lines_layer = self.input_lines.layer()
@@ -219,26 +249,26 @@ class RadiationPolygonizer:
                 break
 
             geom = feat.GetGeometryRef()
-            intersection, int_id, line_list, line_id = self._count_intersection(geom, region_box, intersection, int_id, line_list, line_id)
+            intersection_list, int_id, line_list, line_id = self._count_intersection(geom, region_box, intersection_list, int_id, line_list, line_id)
 
         # Sort intersection points in anticlockwise order
         intersection_sorted = []
         topLeft = Intersection(0, region_point[0], region_point[2], 0)
         intersection_sorted.append(topLeft)
         # sort points on the left side
-        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[0], 2, 1, 0)
+        intersection_list, intersection_sorted = self._sort_intersection(intersection_list, intersection_sorted, region_point[0], 2, 1, 0)
         bottomLeft = Intersection(1, region_point[0], region_point[3], 0)
         intersection_sorted.append(bottomLeft)
         # sort points on the bottom side
-        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[3], 1, 2, 1)
+        intersection_list, intersection_sorted = self._sort_intersection(intersection_list, intersection_sorted, region_point[3], 1, 2, 1)
         bottomRight = Intersection(2, region_point[1], region_point[3], 0)
         intersection_sorted.append(bottomRight)
         # sort points on the right side
-        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[1], 2, 1, 1)
+        intersection_list, intersection_sorted = self._sort_intersection(intersection_list, intersection_sorted, region_point[1], 2, 1, 1)
         topRight = Intersection(3, region_point[1], region_point[2], 0)
         intersection_sorted.append(topRight)
         # sort points on the top side
-        intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[2], 1, 2, 0)
+        intersection_list, intersection_sorted = self._sort_intersection(intersection_list, intersection_sorted, region_point[2], 1, 2, 0)
 
         intersection_sorted = intersection_sorted + intersection_sorted # docasne reseni
 
