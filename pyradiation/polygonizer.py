@@ -54,20 +54,46 @@ class RadiationPolygonizer:
                 return []
             multiline = ogr.Geometry(ogr.wkbMultiLineString)
             multiline.AddGeometry(geom)
+
             for line in line_list:
                 if line.id == line_id:
                     start_line = line.start_point
                     end_line = line.end_point
                     print ('end line: ', end_line)
             flag_inter_found = False
+            z = geom.GetZ(0)
             for inter in intersection:
                 if inter.id == end_line:
-                    print inter.id
-                    print end_line
                     flag_inter_found = True
-                # if flag_inter_found:
-                #    print inter
-
+                    end_line_x = inter.x
+                    end_line_y = inter.y
+                    continue
+                if flag_inter_found:
+                    print inter.id
+                    if inter.z == z:
+                        line1 = ogr.Geometry(ogr.wkbLineString)
+                        line1.AddPoint(end_line_x, end_line_y)
+                        line1.AddPoint(inter.x, inter.y)
+                        multiline.AddGeometry(line1)
+                        print("nalezen bod dalsi lajny")
+                        line_id_next = inter.id
+                        break
+                    elif inter.z == 0:
+                        line1 = ogr.Geometry(ogr.wkbLineString)
+                        line1.AddPoint(end_line_x, end_line_y)
+                        line1.AddPoint(inter.x, inter.y)
+                        multiline.AddGeometry(line1)
+                        print("pridan rohovy bod")
+                    else:
+                        continue
+            print "vyskoceno z for cyklu"
+            for line in line_list:
+                if line_id_next:
+                    if line.id == line_id_next:
+                        start_line_next = line.start_point
+                        end_line_next = line.end_point
+                        print ('end line next: ', end_line)
+                        #multiline.AddGeometry(line.geom)
             return []
         else:
             return geom
@@ -91,11 +117,11 @@ class RadiationPolygonizer:
                 print ("Non-ring feature!!", line_id)
             else:
                 intersection_point = geom.Intersection(box)
-                new_line = MyLine(line_id, int_id, int_id+1)
+                new_line = MyLine(line_id, int_id, int_id+1, geom)
                 line_list.append(new_line)
-                Z = geom.GetZ(0)
+                z = geom.GetZ(0)
                 for point in intersection_point:
-                    new_inter = Intersection(int_id, point.GetX(), point.GetY(), Z)
+                    new_inter = Intersection(int_id, point.GetX(), point.GetY(), z)
                     intersection.append(new_inter)
                     int_id = int_id+1
 
@@ -214,6 +240,7 @@ class RadiationPolygonizer:
         # sort points on the top side
         intersection, intersection_sorted = self._sort_intersection(intersection, intersection_sorted, region_point[2], 1, 2, 0)
 
+        intersection_sorted = intersection_sorted + intersection_sorted # docasne reseni
 
         line_id = 0
         lines_layer.ResetReading()
@@ -245,10 +272,11 @@ class RadiationPolygonizer:
 
 
 class MyLine:
-    def __init__(self, id, start, end):
+    def __init__(self, id, start, end, geom):
         self.id = id
         self.start_point = start
         self.end_point = end
+        self.geom = geom
 
 
 class Intersection:
