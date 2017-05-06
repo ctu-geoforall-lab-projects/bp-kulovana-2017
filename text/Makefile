@@ -1,4 +1,4 @@
-FILE=tereza-kulovana-bp-2017
+FILE=michael-kala-bp-2017
 
 all:
 	pdflatex $(FILE)
