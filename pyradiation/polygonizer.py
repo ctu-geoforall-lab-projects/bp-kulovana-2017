@@ -53,7 +53,7 @@ class RadiationPolygonizer:
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
 
-    def _close_line(self, geom, line_id):
+    def _close_line(self, geom, line_id, reverse = False):
         """Close lines.
 
         If start point differs from end point than line is closed by
@@ -61,6 +61,7 @@ class RadiationPolygonizer:
 
         :param geom: input lines geometry (defined as LineStrings)
         :param line_id: ID of an input geometry
+        :param reverse: if TRUE iterate over intersection points in reverse order
 
         :return: closed geometry
         """
@@ -78,7 +79,7 @@ class RadiationPolygonizer:
                     print " "
                     print ('Main line: start: {}, end: {}'.format(start_main, end_main))
 
-            multiline, line_last_id, geom_closed = self._find_next_point(z, end_main, start_main, multiline)
+            multiline, line_last_id, geom_closed = self._find_next_point(z, end_main, start_main, multiline, reverse)
 
             while geom_closed == 0:
                 for line in self.line_list:
@@ -88,7 +89,7 @@ class RadiationPolygonizer:
                         multiline.AddGeometry(line.geom)
                         print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
                         multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
-                                                                                     multiline)
+                                                                                     multiline, reverse)
                         break
                     elif line.end_point == line_last_id:
                         start_line_next = line.end_point
@@ -100,7 +101,7 @@ class RadiationPolygonizer:
                         multiline.AddGeometry(geom_reverse)
                         print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
                         multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
-                                                                                     multiline)
+                                                                                     multiline, reverse)
                         break
             else:
                 print "ukonceny cyklus"
@@ -108,24 +109,29 @@ class RadiationPolygonizer:
         else:
             return geom
 
-    def _find_next_point(self, z, id_prev, start_main, multiline):
+    def _find_next_point(self, z, id_prev, start_main, multiline, reverse):
         '''
         Find next point with same Z coordinate or with Z == 0.
         If Z is 0 then add new line between last point and box vertex to multiline.
         If Z coordinate of new point is the same as of the multiline then add new line between last point and new
         point to multiline.
-        If end point of new line is equal to the start point of multline then geometry is closed.
+        If end point of new line is equal to the start point of multiline then geometry is closed.
 
         :param z: Z coordinate of multiline
         :param id_prev: ID of last point in multiline
         :param start_main: ID of start point of multiline
         :param multiline: input lines geometry (defined as MultiLineStrings)
+        :param reverse: if TRUE iterate over intersection points in reverse order
 
         :return: multiline geometry, ID of the last point in multiline, info if geometry is closed
         '''
+        if not reverse:
+            intersection_sorted = self.intersection_sorted
+        elif reverse:
+            intersection_sorted = reversed(self.intersection_sorted)
 
         flag_inter_found = False
-        for inter in self.intersection_sorted:
+        for inter in intersection_sorted:
             if inter.id == id_prev:
                 flag_inter_found = True
                 end_line_x = inter.x
@@ -135,8 +141,8 @@ class RadiationPolygonizer:
                 # print inter.id
                 if inter.z == z:
                     line1 = ogr.Geometry(ogr.wkbLineString)
-                    line1.AddPoint(end_line_x, end_line_y)
-                    line1.AddPoint(inter.x, inter.y)
+                    line1.AddPoint(end_line_x, end_line_y, z)
+                    line1.AddPoint(inter.x, inter.y, inter.z)
                     multiline.AddGeometry(line1)
                     print ('Next line: start: {}, end: {}'.format(id_prev, inter.id))
                     line_last_id = inter.id
@@ -150,10 +156,12 @@ class RadiationPolygonizer:
                         break
                 elif inter.z == 0:
                     line1 = ogr.Geometry(ogr.wkbLineString)
-                    line1.AddPoint(end_line_x, end_line_y)
-                    line1.AddPoint(inter.x, inter.y)
+                    line1.AddPoint(end_line_x, end_line_y, z)
+                    line1.AddPoint(inter.x, inter.y, z)
                     multiline.AddGeometry(line1)
                     print("pridan rohovy bod")
+                    end_line_x = inter.x
+                    end_line_y = inter.y
 
         return multiline, line_last_id, geom_closed
 
@@ -304,15 +312,19 @@ class RadiationPolygonizer:
             # 3. close open isolines (based on bbox)
             # print warning if isolines cannot be closed
             geom_closed = self._close_line(geom, geom_id)
+            geom_closed2 = self._close_line(geom, geom_id, reverse = True)
 
             # 4. perform generalization if defined
             if self.generalizer:
                 geom_simplified = self.generalizer.perform(geom_closed)
+                geom_simplified2 = self.generalizer.perform(geom_closed2)
             else:
                 geom_simplified = geom_closed
+                geom_simplified2 = geom_closed2
 
             # 5. create polygons from closed lines
             polygon = self._create_polygon(geom_simplified, geom_id)
+            polygon2 = self._create_polygon(geom_simplified2, geom_id)
 
             # 6. write polygons to output
             # self._write_output(polygon, value)
