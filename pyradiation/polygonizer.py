@@ -23,6 +23,11 @@ class Intersection:
 
 
 class RadiationPolygonizer:
+
+    intersection_list = []
+    intersection_id = 0
+    line_list = []
+
     def __init__(self, lines, generalizer=None):
         self.input_lines = lines
         self.generalizer = generalizer
@@ -138,7 +143,6 @@ class RadiationPolygonizer:
                 end_line_y = inter.y
                 continue
             if flag_inter_found:
-                # print inter.id
                 if inter.z == z:
                     line1 = ogr.Geometry(ogr.wkbLineString)
                     line1.AddPoint(end_line_x, end_line_y, z)
@@ -266,8 +270,6 @@ class RadiationPolygonizer:
         # region_point = (leftX, rightX, topY, bottomY)
 
         # 1. create intersection points (lines x box) and add them to intersection list (unsorted)
-        self.intersection_list = []
-        self.intersection_id = 0
         # Add region_box corners to intersection_list
         for i in range(0, region_box.GetPointCount() - 1):
             pt = region_box.GetPoint(i)
@@ -275,7 +277,6 @@ class RadiationPolygonizer:
             self.intersection_list.append(new_inter)
             self.intersection_id += 1
 
-        self.line_list = []
         lines_layer = self.input_lines.layer()
         lines_layer.ResetReading()
         while True:
