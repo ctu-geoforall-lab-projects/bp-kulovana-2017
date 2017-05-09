@@ -174,22 +174,7 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         self.levelsUpdate()
         print self.levels
 
-        raster = self.raster_box.currentLayer().source()
-        print "cesta k rastru"
-        print type(raster)
-        print type(raster.encode('ascii', 'ignore'))
-        raster = raster.encode('ascii', 'ignore')
-        raster = raster.split("/")
-        print raster
-        raster = "\\".join(raster)
-        print type(raster)
-
-        text = "cesta/k/rastru"
-        print type(text)
-        text = text.split("/")
-        print text
-        text = "\\".join(text)
-        print type(text)
+        raster = self.raster_box.currentLayer().dataProvider().dataSourceUri()
 
         rc = isolines.RadiationIsolines(raster)
         output_dir = os.path.dirname(raster)
@@ -207,6 +192,6 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         )
         output = os.path.join(output_dir, output_filename)
         print output
-        rp.destination(output)
+        rp.destination(str(output))
         rp.polygonize()
         print('{} generated'.format(output))
