@@ -7,15 +7,55 @@
 \section{Textový report}
 
 
-\subsection{MGRS}
-Hlásný systém MGRS (\zk{MGRS}) je systém udávání polohy používaný v \zk{NATO}. Využívá Mercatorovo příčné válcové konformní zobrazení v šestistupňových poledníkových pásech (\zk{UTM}) a UPS. 
+\subsection{Military grid reference system}
+Hlásný systém MGRS (\zk{MGRS}) je systém udávání polohy používaný Severoatlantickou aliancí (\zk{NATO}). Využívá Mercatorovo příčné válcové konformní zobrazení (\zk{UTM}), případně UPS. 
 
+Na rozdíl od jiných souřadnicových systémů, které vyjadřují polohu pomocí dvojice hodnot (šířka/délka, x/y), MGRS využívá jen jednu hodnotu a to alfanumerický řetězec znaků. Ten je tvořen třemi údaji:
 
-který umožňuje vyjadřovat polohu bodů na zemském povrchu v alfanumerických znacích. 
-Na rozdíl od jiných souřadnicových systémů, které vyjadřují polohu pomocí dvojice hodnot (šírka, délka, případně x, y), MGRS využívá jen jednu hodnotu.
+\begin{itemize}
+	\item \textbf{označení zóny}
+	
+	Jedna zóna je tvořena sférickým čtyřúhelníkem referenčního elipsoidu, jenž je vymezen zeměpisnými poledníky a rovnoběžkami. Sférické čtyřúhelníky vznikají rozdělením povrchu Země do 60 poledníkových zón o šířce 6°, které jsou následně děleny ve směru rovnoběžek na 19 vrstev po 8° a 1 vrstvu o výšce 12°.
+	
+	Poledníkové pásy jsou číslovány od 1 do 60 od obrazu poledníku 180° z. d. směrem na východ. Vrstvy jsou značeny velkými písmeny latinské abecedy C-X (s vynecháním písmen I a O vzhledem k jejich podobnosti s číslicemi) od obrazu rovnoběžky 80° j. š. na sever.
+	
+	Označení zóny je složeno z čísla poledníkového pásu následovaného písmenem rovnoběžkového pásu (např. 33U).
+	
+	\item \textbf{označení čtverce 100 x 100 km}
+	
+	Jednotlivé zóny jsou rozděleny na čtverce o hraně 100 km sítí čar rovnoběžných s obrazem příslušného osového poledníku a rovníku. Jelikož se poledníkové pásy směrem k pólům zužují, zóny obsahují určitý počet úplných čtverců a na krajích neúplné čtverce o proměnlivé šířce. 
+	
+	Pro označení sloupců jsou použita písmena A-Z (s vynecháním I a O), značení začíná u obrazu poledníku 180° z. d. a pokračuje směrem na východ, po písmenu Z se celá řada opět opakuje. Vrstvám jsou přidělena písmena A-V (bez I a O). První vrstva lichých poledníkových pásů je značena písmenem A, u sudých pásů začíná písmenem F. Po písmenu V se abeceda opakuje. 
+	
+	Označení čtverce se skládá ze dvou písmen - označení sloupce a vrstvy (např. VR)
+		
+	\item \textbf{souřadnice bodu ve 100 km čtverci}
+	
+	V rámci čtverce je upřesněna poloha bodu za pomoci n+n číslic, kde první sada číslic určuje východní souřadnici od levého kraje čtverce a druhá sada severní souřadnici od okraje spodního. Podle přesnosti vyjádření polohy bodu n nabývá hodnot 1, 2, 3, 4 nebo 5. 
+	
+		\begin{itemize}
+				\item 1+1 číslice pro souřadnici s přesností 10 km (\textit{54})
+				\item 2+2 číslice pro souřadnici s přesností 1 km (\textit{5748})
+				\item 3+3 číslice pro souřadnici s přesností 100 m (\textit{577484})
+				\item 4+4 číslice pro souřadnici s přesností 10 m (\textit{57704840})
+				\item 5+5 číslic pro souřadnici s přesností 1 m (\textit{5770048400})
+		\end{itemize}	
+		 
+\end{itemize}
+
+Poloha Fakulty stavební ČVUT v Praze by tedy pomocí hlásného systému MGRS s přesností na metry byla vyjádřena řetězcem ...
+
+Standardem NATO je rozlišení 10 m [wiki], Armáda ČR pro výstup zásuvného modulu požaduje přesnost na 1 m.
+
+Při snižování přesnosti v systému MGRS se souřadnice nezaokrouhlují, ale přebytečné číslice se odříznou. 
+
+Souřadnice (například 33UVR577484, tj. 33U VR 577 484) se skládají z několika informací:
+
 
 
 zdroje: 
-% https://boundlessgeo.com/2015/04/mgrs-coordinates-qgis/
-% https://www.vugtk.cz/slovnik/5479_hlasny-system-mgrs
+% https://boundlessgeo.com/2015/04/mgrs-coordinates-qgis/ - vlastně vůbec
+% https://www.vugtk.cz/slovnik/5479_hlasny-system-mgrs - základní definice
 % http://uhulag.mendelu.cz/files/pagesdata/cz/geodezie/geodezie1/souradnicove_systemy.pdf (str. 48)
+% http://www.diverzanti.cz/cl_36a - nejvíc
+% https://en.wikipedia.org/wiki/Military_Grid_Reference_System
