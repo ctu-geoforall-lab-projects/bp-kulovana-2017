@@ -22,11 +22,19 @@ class Intersection:
         self.z = z
 
 
+class MyPolygon:
+    def __init__(self, id, elevation, polygon):
+        self.id = id
+        self.elev = elevation
+        self.polygon = polygon
+
+
 class RadiationPolygonizer:
 
     intersection_list = []
     intersection_id = 0
     line_list = []
+    polygon_list = []
 
     def __init__(self, lines, generalizer=None):
         self.input_lines = lines
@@ -57,6 +65,7 @@ class RadiationPolygonizer:
         self.output_layer = self.output_ds.CreateLayer(layer_name, self.output_srs)
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
+        self.output_layer.CreateField(ogr.FieldDefn("level", ogr.OFTInteger))
 
     def _close_line(self, geom, line_id, reverse = False):
         """Close lines.
@@ -81,8 +90,8 @@ class RadiationPolygonizer:
                 if line.id == line_id:
                     start_main = line.start_point
                     end_main = line.end_point
-                    print " "
-                    print ('Main line: start: {}, end: {}'.format(start_main, end_main))
+                    # print " "
+                    # print ('Main line: start: {}, end: {}'.format(start_main, end_main))
 
             multiline, line_last_id, geom_closed = self._find_next_point(z, end_main, start_main, multiline, reverse)
 
@@ -92,7 +101,7 @@ class RadiationPolygonizer:
                         start_line_next = line.start_point
                         end_line_next = line.end_point
                         multiline.AddGeometry(line.geom)
-                        print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
+                        # print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
                         multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
                                                                                      multiline, reverse)
                         break
@@ -104,7 +113,7 @@ class RadiationPolygonizer:
                             pt = line.geom.GetPoint(i - 1)
                             geom_reverse.AddPoint(pt[0], pt[1], pt[2])
                         multiline.AddGeometry(geom_reverse)
-                        print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
+                        # print ('Next line: start: {}, end: {}'.format(start_line_next, end_line_next))
                         multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
                                                                                      multiline, reverse)
                         break
@@ -148,14 +157,14 @@ class RadiationPolygonizer:
                     line1.AddPoint(end_line_x, end_line_y, z)
                     line1.AddPoint(inter.x, inter.y, inter.z)
                     multiline.AddGeometry(line1)
-                    print ('Next line: start: {}, end: {}'.format(id_prev, inter.id))
+                    # print ('Next line: start: {}, end: {}'.format(id_prev, inter.id))
                     line_last_id = inter.id
                     if inter.id == start_main:
                         print "geometry closed"
                         geom_closed = 1
                         break
                     else:
-                        print("nalezen bod dalsi lajny")
+                        # sprint("nalezen bod dalsi lajny")
                         geom_closed = 0
                         break
                 elif inter.z == 0:
@@ -163,7 +172,7 @@ class RadiationPolygonizer:
                     line1.AddPoint(end_line_x, end_line_y, z)
                     line1.AddPoint(inter.x, inter.y, z)
                     multiline.AddGeometry(line1)
-                    print("pridan rohovy bod")
+                    # print("pridan rohovy bod")
                     end_line_x = inter.x
                     end_line_y = inter.y
 
@@ -229,7 +238,7 @@ class RadiationPolygonizer:
                     self.intersection_sorted.append(p)
                     self.intersection_list.remove(p)
 
-    def _create_polygon(self, geom, line_id):
+    def _create_polygon(self, geom, i, z):
         """Create polygon from closed linestring geometry.
 
         If input geometry is not closed linestring that PolygonError
@@ -248,17 +257,9 @@ class RadiationPolygonizer:
             poly = ogr.BuildPolygonFromEdges(ring, 0, 1)
             # print poly
 
-            # Put geometry inside a feature
-            layerDefinition = self.output_layer.GetLayerDefn()
-            featureIndex = 0
-            feature = ogr.Feature(layerDefinition)
-            feature.SetGeometry(poly)
-            feature.SetFID(featureIndex)
-
-            # Create the feature in the layer (shapefile)
-            self.output_layer.CreateFeature(feature)
-
-            return poly
+            # Add polygon to polygon_list
+            new_poly = MyPolygon(i, z, poly)
+            self.polygon_list.append(new_poly)
 
     def _write_output(self):
         # check if destination is defined
@@ -303,6 +304,7 @@ class RadiationPolygonizer:
         self.intersection_sorted = self.intersection_sorted + self.intersection_sorted  # docasne reseni
 
         lines_layer.ResetReading()
+        i = 0
         while True:
             feat = lines_layer.GetNextFeature()
             if feat is None:
@@ -324,8 +326,28 @@ class RadiationPolygonizer:
                 geom_simplified2 = geom_closed2
 
             # 5. create polygons from closed lines
-            polygon = self._create_polygon(geom_simplified, geom_id)
-            polygon2 = self._create_polygon(geom_simplified2, geom_id)
+            z = geom.GetZ(0)
+            self._create_polygon(geom_simplified, i+1, z)
+            self._create_polygon(geom_simplified2, i, z)
+
+            i += 2
+
+        polygon_sort = sorted(self.polygon_list, key=lambda p: p.elev)
+
+        for poly in polygon_sort:
+
+            # Put geometry inside a feature
+            layerDefinition = self.output_layer.GetLayerDefn()
+            featureIndex = 0
+            feature = ogr.Feature(layerDefinition)
+            feature.SetGeometry(poly.polygon)
+            feature.SetFID(featureIndex)
+            feature.SetField("ID", poly.id)
+            feature.SetField("level", poly.elev)
+
+            # Create the feature in the layer (shapefile)
+            self.output_layer.CreateFeature(feature)
+            feature = None
 
             # 6. write polygons to output
             # self._write_output(polygon, value)
