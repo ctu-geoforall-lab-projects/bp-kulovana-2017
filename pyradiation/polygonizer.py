@@ -1,9 +1,11 @@
 import os
 import tempfile
+import codecs
 
 from osgeo import ogr
 
 from .exception import RadiationError
+import mgrs
 
 
 class MyLine:
@@ -36,9 +38,10 @@ class RadiationPolygonizer:
     line_list = []
     polygon_list = []
 
-    def __init__(self, lines, generalizer=None):
+    def __init__(self, lines, reportFileName, generalizer=None):
         self.input_lines = lines
         self.generalizer = generalizer
+        self.reportFileName = reportFileName
 
     def destination(self, dst_filename=None, overwrite=True):
         """Generate layer to save polygons in.
@@ -265,7 +268,41 @@ class RadiationPolygonizer:
         # check if destination is defined
         pass
 
-    def polygonize(self):
+
+    def createReport(self, index, z, point):
+        """Create report file.
+
+        Prints error when report txt file cannot be opened for writing.
+
+        """
+        try:
+            try:
+                # python 3.x
+                report = open(self.reportFileName, 'w', encoding='utf-8')
+            except:
+                # python 2.x
+                report = codecs.open(self.reportFileName, 'w', encoding='utf-8')
+        except IOError as e:
+            self.computeMessage.emit(u'Error', u'Unable open {} for writing. Reason: {}'.format(self.reportFileName, e),'CRITICAL')
+            return
+
+        if index == 0:
+            report_text = (
+                u'/{}BQM2'.format(z),
+                u'/MGRS:{}'.format(point, ls=os.linesep)
+            )
+        elif index == 1:
+            report_text = (
+                u'/{}CGH'.format(z),
+                u'/MGRS:{}'.format(point, ls=os.linesep)
+            )
+
+        for line in report_text:
+            report.write(line)
+
+        report.close()
+
+    def polygonize(self, index):
         # 0. create region box geometry from input raster
         region_box, region_point = self.input_lines.box()
         # region_point = (leftX, rightX, topY, bottomY)
@@ -348,6 +385,11 @@ class RadiationPolygonizer:
             # Create the feature in the layer (shapefile)
             self.output_layer.CreateFeature(feature)
             feature = None
+            z = poly.elev
+            for point in poly.polygon:
+                point_mgrs = mgrs.toMgrs(point.GetY(), point.GetX(), 5)
+                self.createReport(index, z, point_mgrs)
+                break
 
             # 6. write polygons to output
             # self._write_output(polygon, value)

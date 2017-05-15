@@ -96,7 +96,30 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
             self.settings.setValue(sender, os.path.dirname(fileName))
 
     def onReportButton(self):
-        pass
+        """Get destination of report and shape file.
+
+        Set path and name for shape file by default as file path for report file.
+
+        Set default name for report file same as track layer name"""
+
+        sender = u'{}-lastUserFilePath'.format(self.sender().objectName())
+        lastUsedFilePath = self.settings.value(sender, '')
+
+        self.saveReportName = QFileDialog.getSaveFileName(self, self.tr(u'Select destination file'),
+                                                          self.tr(u'{}{}.txt').format(lastUsedFilePath, os.path.sep),
+                                                          filter="TXT (*.txt)")
+
+        self.report_file.setText(self.tr(u'{}').format(self.saveReportName))
+
+        if self.saveReportName:
+        #     self.shp_file.setText(self.tr(u'{}').format(self.saveShpName))
+            self.settings.setValue(sender, os.path.dirname(self.saveReportName))
+
+            # Enable the saveButton if file is chosen
+        # if not self.report_file.text():
+        #     self.save_button.setEnabled(False)
+        # else:
+        #     self.save_button.setEnabled(True)
 
     def onTypeBox(self):
         # Activity = 0, Doserate = 1
@@ -186,12 +209,13 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         rc.generate(self.levels)
         print('{} generated'.format(output))
 
-        rp = polygonizer.RadiationPolygonizer(rc)
+        rp = polygonizer.RadiationPolygonizer(rc, self.saveReportName)
         output_filename = '{}_polygons.shp'.format(
             os.path.splitext(os.path.basename(raster))[0]
         )
         output = os.path.join(output_dir, output_filename)
         print output
         rp.destination(str(output))
-        rp.polygonize()
+        index = self.type_box.currentIndex()
+        rp.polygonize(index)
         print('{} generated'.format(output))
