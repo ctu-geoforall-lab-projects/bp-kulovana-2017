@@ -63,7 +63,7 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         self.doserate_label.setText("Activity [MBq/m^2]")
 
         self.load_raster.clicked.connect(self.onLoadRaster)
-        self.solve_button.setEnabled(True)
+        self.solve_button.setEnabled(False)
         self.solve_button.clicked.connect(self.onSaveButton)
         self.report_button.clicked.connect(self.onReportButton)
         self.type_box.currentIndexChanged.connect(self.onTypeBox)
@@ -115,11 +115,11 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         #     self.shp_file.setText(self.tr(u'{}').format(self.saveShpName))
             self.settings.setValue(sender, os.path.dirname(self.saveReportName))
 
-            # Enable the saveButton if file is chosen
-        # if not self.report_file.text():
-        #     self.save_button.setEnabled(False)
-        # else:
-        #     self.save_button.setEnabled(True)
+        # Enable the saveButton if file is chosen
+        if not self.report_file.text():
+            self.solve_button.setEnabled(False)
+        else:
+            self.solve_button.setEnabled(True)
 
     def onTypeBox(self):
         # Activity = 0, Doserate = 1
