@@ -26,7 +26,7 @@ import os
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import pyqtSignal, QSettings, QFileInfo
 from PyQt4.QtGui import QFileDialog
-from qgis.core import QgsProviderRegistry
+from qgis.core import QgsProviderRegistry, QgsMapLayerRegistry
 from qgis.gui import QgsMapLayerComboBox, QgsMapLayerProxyModel
 from qgis.utils import QgsMessageBar, iface
 from osgeo import gdal, ogr
@@ -78,6 +78,8 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         self.check_50.stateChanged.connect(self.levelsUpdate)
         self.check_100.stateChanged.connect(self.levelsUpdate)
         self.check_1000.stateChanged.connect(self.levelsUpdate)
+
+        self.check_shp.setChecked(True)
 
     def closeEvent(self, event):
         self.closingPlugin.emit()
@@ -193,7 +195,6 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
 
     def onSaveButton(self):
         print "Save button clicked"
-        print "levely"
         self.levelsUpdate()
         print self.levels
 
@@ -210,12 +211,36 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         print('{} generated'.format(output))
 
         rp = polygonizer.RadiationPolygonizer(rc, self.saveReportName)
-        output_filename = '{}_polygons.shp'.format(
-            os.path.splitext(os.path.basename(raster))[0]
-        )
-        output = os.path.join(output_dir, output_filename)
-        print output
-        rp.destination(str(output))
-        index = self.type_box.currentIndex()
-        rp.polygonize(index)
-        print('{} generated'.format(output))
+        if self.check_shp.isChecked():
+            output_filename = '{}_polygons.shp'.format(
+                os.path.splitext(os.path.basename(raster))[0]
+            )
+
+            output = os.path.join(output_dir, output_filename)
+
+            # remove layer with same name as newly created layer
+            for lyr in QgsMapLayerRegistry.instance().mapLayers().values():
+                if lyr.source() == output:
+                    QgsMapLayerRegistry.instance().removeMapLayer(lyr.id())
+
+            # remove shape file with same name
+            if os.path.isfile(output):
+                os.remove(output)
+            if os.path.isfile(output.split('.')[0] + '.shx'):
+                os.remove(output.split('.')[0] + '.shx')
+            if os.path.isfile(output.split('.')[0] + '.dbf'):
+                os.remove(output.split('.')[0] + '.dbf')
+            if os.path.isfile(output.split('.')[0] + '.prj'):
+                os.remove(output.split('.')[0] + '.prj')
+
+            rp.destination(str(output))
+            index = self.type_box.currentIndex()
+            rp.polygonize(index)
+            print('{} generated'.format(output))
+
+            newLayer = iface.addVectorLayer(u'{f}'.format(f=output),
+                                            u'{f}'.format(f=QFileInfo(output).baseName()), "ogr")
+        else:
+            rp.destination()
+            index = self.type_box.currentIndex()
+            rp.polygonize(index)
