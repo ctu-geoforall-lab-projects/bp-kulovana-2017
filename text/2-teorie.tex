@@ -3,27 +3,73 @@
 
 V této kapitole jsou objasněny způsoby monitorování radiační situace, popsán sběr dat a představen výstupní report.
 
-\section{Radiační průzkum}
-Systematické plošné monitorování radiační situace má na území České republiky počátky v dubnu 1986 (1), kdy došlo k havaráii v JE Černobyl. Je zajišťováno především pomocí celostátní Radiační monitorovací sítě (\zk{RMS}). 
+\section{Ionizující záření}
 
-RMS běžně operuje v tzv. normálním režimu, v případě mimořádné radiační situace přechází do tzv. havarijního režimu. Během normálního režimu pracují stálé složky RMS, jež v první řadě zajišťují provoz fixních měřících míst a analýzu dat z nich získaných. Mezi stálé složky RMS patří Státní ústav pro jadernou bezpečnost {\zk(SÚJB)}, Státní ústav radiační ochrany {\zk(SÚRO)} a Český hydrometeorologický úřad {\zk(ČHMÚ)}. Při přechodu do havarijního režimu dochází rovněž k aktivaci pohotovostních složek. Po zvážení je zahájen radiační průzkum, který sestává z dalšího monitorování na měřících bodech, pojezdového měření a v případě potřeby i měření leteckého.
+Ionizující záření je tok buď hmotných částic, nebo fotonů elektromagnetického záření, které mají schopnost ionizovat atomy prostředí či excitovat jejich jádra. Příčinou vzniku může být radioaktivní rozpad, kosmické záření nebo jej lze vytvořit uměle. Je průvodním jevem jaderných procesů, během nichž se jádro či obal atomu dostávají do energeticky nestabilního excitovaného stavu. Pro návrat do stabilního stavu musí vyzářit energii ve formě částic či fotonů elektromagnetického záření. Podle způsobu interakce s prostředím se ionizující záření dělí na dva druhy:
+
+\begin{itemize}
+	\item \textbf{Přímo ionizující záření} mohou způsobovat jen nabité částice, které mají dostatečnou kinetickou energii k vyvolání ionizace. Mezi nabité částice patří např. elektrony, částice $\alpha$, $\beta$.
+	
+	\item \textbf{Nepřímo ionizující záření} je tvořeno nenabitými částicemi (neutrony, fotony), které prostředí přímo sami neionizují, ale při vzájemném působení s prostředím předávají svou kinetickou energii sekundárním, nabitým částicím, jež následně přímými účinky na atomy látku ionizují.
+\end{itemize}
+
+% http://astronuklfyzika.cz/JadRadFyzika6.htm
+% http://fbmi.sirdik.org/1-kapitola/13/131.html
+
+\subsection{Fyzikální veličiny a jednotky}
+
+\begin{itemize}
+	\item \textbf{Plošná aktivita}
+	
+	Množství radioaktivní látky je charakterizováno aktivitou. Jedná se o počet radioaktivních přeměn vztažených na jednotku času. Aktivita má za jednotku becquerel {[}Bq{]}. U plošných zdrojů záření se používá plošná aktivita neboli podíl aktivity a celkové plochy látky {[}Bq/m$^2${]}.
+	
+	\item \textbf{Dávkový příkon}
+	
+	Působení ionizujícího záření popisuje veličina dávka (či také absorbovaná dávka), která je určena jako poměr střední energie předané ionizujícím zářením látce o dané hmotnosti. Základní jednotkou je gray {[}Gy{]}, který odpovídá energii 1 joule absorbované v kilogramu látky. Dávkový příkon je přírůstek dávky v časovém intervalu {[}Gy/s{]}. V praxi se používají nižší jednotky {[}µGy/h{]} nebo {[}cGy/h{]}.
+
+	\item \textbf{Příkon dávkového ekvivalentu}
+	
+	Na rozdíl od předchozích veličin patří dávkový ekvivalent mezi tzv. radiobiologické veličiny, tj. zohledňující účinky působení různých druhů záření na živou hmotu. Dávkový ekvivalent je součin dávky v uvažovaném bodě tkáně a jakostního činitele, jenž vyjadřuje rozdílnou biologickou účinnost různých druhů záření. Příkon fotonového dávkového ekvivalentu (\zk{PFDE}) je přírůstek dávkového ekvivalentu způsobeného fotony v časovém intervalu {[}Sv/s{]}. Prostorový dávkový ekvivalent odpovídá dávkovému ekvivalentu, který by uspořádané a rozšířené pole ionizujícího záření způsobilo v hloubce d = 10 mm v ICRU kouli\footnote{Koule z materiálu adekvátně odpovídajícího tkáni lidského těla o průměru 30 cm} na rádius vektoru opačného směru, než je orientované pole. Příkon prostorového dávkového ekvivalentu (\zk{PPDE}) je přírůstek prostorového dávkového ekvivalentu v časovém intervalu {[}Sv/s{]}.
+% http://www.radioaktivita.cz/jednotky.html
+% https://www.sujb.cz/aplikace/monras/?lng=cs_CZ#z3
+%http://fbmi.sirdik.org/
+
+		\begin{table}[h!]
+			\centering
+			\caption{Fyzikální veličiny}
+			\label{tab:tab_veliciny}
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Veličina}           			& \textbf{Jednotka}  & \textbf{Značka}  \\ \hline
+				Aktivita								& becquerel			 & {[}Bq{]}			\\ \hline
+				Plošná aktivita							& becquerel/m$^2$	 & {[}Bq/m$^2${]}	\\ \hline
+				Dávka                      	 			& gray               & {[}Gy{]}         \\ \hline
+				Dávkový příkon              			& gray/sekunda		 & {[}Gy/s{]}       \\ \hline
+				Dávkový ekvivalent          			& sievert            & {[}Sv{]}         \\ \hline
+				Příkon fotonového dávkového ekvivalentu & sievert/sekunda	 & {[}Sv/s{]}       \\ \hline
+				Příkon prostorového dávkového ekvivalentu & sievert/sekunda	 & {[}Sv/s{]}       \\ \hline
+			\end{tabular}
+		\end{table}
+\end{itemize}
+
+\section{Radiační monitorování}
+Systematické plošné monitorování radiační situace má na území České republiky počátky v dubnu 1986, kdy došlo k havárii v JE Černobyl. Je zajišťováno především pomocí celostátní Radiační monitorovací sítě (\zk{RMS}). 
+
+\zk{RMS} běžně operuje v tzv. normálním režimu, v případě mimořádné radiační situace přechází do tzv. havarijního režimu. Během normálního režimu pracují stálé složky \zk{RMS}, jež v první řadě zajišťují provoz fixních měřících míst a analýzu dat z nich získaných. Mezi stálé složky \zk{RMS} patří Státní ústav pro jadernou bezpečnost (\zk{SÚJB}), Státní ústav radiační ochrany (\zk{SÚRO}) a Český hydrometeorologický úřad (\zk{ČHMÚ}). Při přechodu do havarijního režimu dochází rovněž k aktivaci pohotovostních složek. Po zvážení je zahájen radiační průzkum, který sestává z dalšího monitorování na měřících bodech, pojezdového měření a v případě potřeby i měření leteckého.
 
 % (1) http://www.mocr.army.cz/informacni-servis/zpravodajstvi/chemici-se-specialisty-statniho-ustavu-radiacni-ochrany-spolecne-monitorovali-radiaci-z-vrtulniku-118918/
-- něco o jednotkách a veličinách
-
-
 
 \subsection{Sběr dat}
 
-Za měření radioaktivity během radiačního průzkumu je u Armády České republiky zodpovědné především 314. centrum výstrahy proti zbraním hromadného ničení v Hostivici-Břve, které je podřízeno 31. pluku radiační, chemické a biologické ochrany v Liberci. 
+Za měření radioaktivity během radiačního průzkumu je u Armády České republiky zodpovědné především 314. centrum výstrahy proti zbraním hromadného ničení (\zk{ZHN}) v Hostivici-Břve, které je podřízeno 31. pluku radiační, chemické a biologické ochrany v Liberci. 
  
-	Konkrétní typy dopravních prostředků a měřících přístrojů zmíněné v textu níže platí pro 314. centrum výstrahy proti ZHN, které poskytlo testovací data pro vývoj zásuvného modulu a které jej bude především využívat. 
+	Konkrétní typy dopravních prostředků a měřících přístrojů zmíněné v textu níže platí pro 314. centrum výstrahy proti \zk{ZHN}, které poskytlo testovací data pro vývoj zásuvného modulu a které jej bude především využívat. 
 
 Typy měření:
 \begin{itemize}
 	\item \textbf{napevno umístěné detektory (měřící body)}
 	
-	Napevno umístěné detektory jsou v činnosti nepřetržitě. Mezi hlavní sítě na území ČR patří Síť včasného zjištění se 71 měřícími místy spravovaná Regionálními centry (RC) {\zk(SÚJB)}, {\zk(SÚRO)}, {\zk(ČHMÚ)}, Hasičským záchranným sborem ČR a Armádou ČR a teritoriální síť TLD, tvořená 185 měřícími místy (2). Vedle nich existují i lokální sítě monitorující okolí JE Dukovany a JE Temelín.
+	Napevno umístěné detektory jsou v činnosti nepřetržitě. Mezi hlavní sítě na území ČR patří Síť včasného zjištění se 71 měřícími místy spravovaná Regionálními centry (RC) \zk{SÚJB}, \zk{SÚRO}, \zk{ČHMÚ}, Hasičským záchranným sborem ČR a Armádou ČR a teritoriální síť TLD, tvořená 185 měřícími místy (2). Vedle nich existují i lokální sítě monitorující okolí JE Dukovany a JE Temelín.
 	Během havarijního režimu hodnoty získané z měřících bodů doplňují informace z terénního průzkumu. 
 	
 % (2) https://www.suro.cz/cz/rms	
@@ -31,14 +77,14 @@ Typy měření:
 	\item \textbf{pojezdové měření}
 	
 	Sběr dat při pojezdovém měření je prováděn z vozidla Land Rover LR-110, lehkého obrněného kolového transportéru BRDM-2 nebo džípu UAZ-469 (postupně vyřazován). Přístroje používané k měření dávkového příkonu jsou DP-98, AS-67 nebo DP-3b a jsou pevně spojené s vozidlem. 
-	Při naměření předem stanoveného dávkového příkonu osádka vozu již dále nepokračuje ve směru rostoucích hodnot do epicentra výbuchu. "Takováto úroveň se pouze vytyčí a souřadnice jejího naměření se zahlásí radiostanicí na sběrné stanoviště (veliteli jednotky radiačního průzkumu, popřípadě na analytickou skupinu)," popisuje nadporučík Jiří Komárek, starší důstojník Skupiny monitorování a leteckého průzkumu 314. centra výstrahy ZHN. Následně se osádka vrací zpět po stejné trase. 
+	Při naměření předem stanoveného dávkového příkonu osádka vozu již dále nepokračuje ve směru rostoucích hodnot do epicentra výbuchu. "Takováto úroveň se pouze vytyčí a souřadnice jejího naměření se zahlásí radiostanicí na sběrné stanoviště (veliteli jednotky radiačního průzkumu, popřípadě na analytickou skupinu)," popisuje nadporučík Jiří Komárek, starší důstojník Skupiny monitorování a leteckého průzkumu 314. centra výstrahy \zk{ZHN}. Následně se osádka vrací zpět po stejné trase. 
 	Právě závislost pozemního průzkumu na trasách přesunu, tj. cestách, je jeho největší nevýhodou. Proto je vhodné ho ve složitějším terénu či při velké havárii doplnit měřením leteckým.
 	
 	\item \textbf{letecké měření z vrtulníku}
 	
 	Oproti pojezdovému měření si letecký průzkum může dovolit prozkoumat kontaminovaný prostor více do hloubky. Úkolem specialistů na palubě však je sledování měřených dávkových příkonů, aby eventuálně mohli buď upravit parametry průzkumu (rychlost, výška), nebo změnit trasu letu. Cílem je zmapování velké oblasti bez ohledu na charakter terénu. 
 	"V případě jaderného výbuchu by mohl být letecký průzkum potenciálně využit ke zmapování radioaktivní stopy, kterou takový výbuch po vypadání částic zanechá. Důležité jsou tady samozřejmě vhodně zvolené podmínky průzkumu," doplňuje dále nadporučík Komárek. 
-	Průzkum nemůže proběhnout do chvíle, než vypadají radioaktivní částice na zemský povrch. Během čekání lze předběžně určit orientační dávkové příkony v epicentru vztažené na odhad mohutnosti výbuchu, na jejichž základě se rozhodne o provedení průzkumu ve vhodném časovém horizontu (např. po "vymření" krátkodobých radionuklidů, kdy radiace v epicentru poklesne). Následně lze provést průzkum v souladu s principem ALARA, tedy že dávka ionizujícího záření, které je osoba vystavena, má být tak nízká, jaké lze rozumně dosáhnout.
+	Průzkum nemůže proběhnout do chvíle, než vypadají radioaktivní částice na zemský povrch. Během čekání lze předběžně určit orientační dávkové příkony v epicentru vztažené na odhad mohutnosti výbuchu, na jejichž základě se rozhodne o provedení průzkumu ve vhodném časovém horizontu (např. po "vymření" krátkodobých radionuklidů, kdy radiace v epicentru poklesne). Následně lze provést průzkum v souladu s principem \zk{ALARA}, tedy že dávka ionizujícího záření, které je osoba vystavena, má být tak nízká, jaké lze rozumně dosáhnout.
 	
 	K provedení leteckého radiačního průzkumu v současné době disponujeme systémem IRIS (velkoobjemový NaI(Tl) doplněný o GM trubici pro velké četnosti záření), přístrojem MobDOSE a palubním detektorem DP-3a.
 
@@ -47,12 +93,8 @@ Typy měření:
 	\item \textbf{měření bezpilotními prostředky}
 \end{itemize}
 
-	Zakreslování do mapy opravdu probíhá ručně, za to je zodpovědná právě analytická skupina. Informace mohou být dále zaneseny do softwaru určeného k varování a uvědomování jednotek o incidentech zahrnujících zbraně hromadného ničení (ZHN) a průmyslové nebezpečné látky (PNL), v souhrnné zkratce CBRN. 
+	Zakreslování do mapy opravdu probíhá ručně, za to je zodpovědná právě analytická skupina. Informace mohou být dále zaneseny do softwaru určeného k varování a uvědomování jednotek o incidentech zahrnujících zbraně hromadného ničení a průmyslové nebezpečné látky, v souhrnné zkratce CBRN. 
 	
-\subsection{Měřené veličiny}
-
-
-
 
 \section{Textový report}
 
