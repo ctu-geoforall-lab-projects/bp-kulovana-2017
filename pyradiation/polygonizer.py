@@ -5,7 +5,7 @@ import codecs
 from osgeo import ogr
 
 from .exception import RadiationError
-import mgrs
+import report
 
 
 class MyLine:
@@ -263,7 +263,6 @@ class RadiationPolygonizer:
         else:
             ring = ogr.ForceToMultiLineString(geom)
             poly = ogr.BuildPolygonFromEdges(ring, 0, 1)
-            # print poly
 
             # Add polygon to polygon_list
             new_poly = MyPolygon(i, z, poly)
@@ -395,11 +394,15 @@ class RadiationPolygonizer:
             # Create the feature in the layer (shapefile)
             self.output_layer.CreateFeature(feature)
             feature = None
-            z = poly.elev
-            for point in poly.polygon:
-                point_mgrs = mgrs.toMgrs(point.GetY(), point.GetX(), 5)
-                self.createReport(index, z, point_mgrs)
+
+        rep = report.Report(self.reportFileName, index)
+        pom = 0
+        for poly in polygon_sort:
+            rep.write_polygon(poly)
+            pom += 1
+            if pom == 3:
                 break
+        rep.close()
 
             # 6. write polygons to output
             # self._write_output(polygon, value)

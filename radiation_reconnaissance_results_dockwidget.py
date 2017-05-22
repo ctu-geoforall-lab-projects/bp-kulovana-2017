@@ -206,10 +206,11 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
             os.path.splitext(os.path.basename(raster))[0]
             )
         output = os.path.join(output_dir, output_filename)
-        rc.destination(output)
+        rc.destination()
         rc.generate(self.levels)
-        print('{} generated'.format(output))
+        # print('{} generated'.format(output))
 
+        # polygonization
         rp = polygonizer.RadiationPolygonizer(rc, self.saveReportName)
         if self.check_shp.isChecked():
             output_filename = '{}_polygons.shp'.format(
