@@ -63,9 +63,10 @@ class RadiationPolygonizer:
             dst_filename = tempfile.NamedTemporaryFile().name
 
         # Generate layer
-        self.output_ds = ogr.GetDriverByName("ESRI Shapefile").CreateDataSource(dst_filename)
+        self.output_ds = ogr.GetDriverByName("ESRI Shapefile")
+        self.out_ds = self.output_ds.CreateDataSource(dst_filename)
         layer_name = os.path.splitext(os.path.basename(dst_filename))[0]
-        self.output_layer = self.output_ds.CreateLayer(layer_name, self.output_srs)
+        self.output_layer = self.out_ds.CreateLayer(layer_name, self.output_srs)
 
         self.output_layer.CreateField(ogr.FieldDefn("ID", ogr.OFTInteger))
         self.output_layer.CreateField(ogr.FieldDefn("level", ogr.OFTInteger))
@@ -85,6 +86,7 @@ class RadiationPolygonizer:
 
         if not geom.IsRing():
             if line_id == 16:  # non-ring feature
+                print "non-ring feature in close lines"
                 return []
             multiline = ogr.Geometry(ogr.wkbMultiLineString)
             multiline.AddGeometry(geom)
@@ -120,8 +122,8 @@ class RadiationPolygonizer:
                         multiline, line_last_id, geom_closed = self._find_next_point(z, end_line_next, start_main,
                                                                                      multiline, reverse)
                         break
-            else:
-                print "ukonceny cyklus"
+            # else:
+            #     print "ukonceny cyklus"
             return multiline
         else:
             return geom
@@ -163,7 +165,7 @@ class RadiationPolygonizer:
                     # print ('Next line: start: {}, end: {}'.format(id_prev, inter.id))
                     line_last_id = inter.id
                     if inter.id == start_main:
-                        print "geometry closed"
+                        # print "geometry closed"
                         geom_closed = 1
                         break
                     else:
@@ -342,6 +344,7 @@ class RadiationPolygonizer:
 
         lines_layer.ResetReading()
         i = 0
+        self.polygon_list = []
         while True:
             feat = lines_layer.GetNextFeature()
             if feat is None:
@@ -395,3 +398,4 @@ class RadiationPolygonizer:
             # self._write_output(polygon, value)
             #
             # print (self.input_lines.layer().GetFeatureCount())
+        self.out_ds = None
