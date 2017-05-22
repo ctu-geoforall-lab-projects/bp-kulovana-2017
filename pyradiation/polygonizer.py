@@ -85,9 +85,6 @@ class RadiationPolygonizer:
         """
 
         if not geom.IsRing():
-            if line_id == 16:  # non-ring feature
-                print "non-ring feature in close lines"
-                return []
             multiline = ogr.Geometry(ogr.wkbMultiLineString)
             multiline.AddGeometry(geom)
             z = geom.GetZ(0)
@@ -197,6 +194,7 @@ class RadiationPolygonizer:
         if not geom.IsRing():
             if not geom.Intersects(box):
                 print ("Non-ring feature!!", line_id)
+                non_ring_flag = True
             else:
                 intersection_point = geom.Intersection(box)
                 geometry = ogr.Geometry(ogr.wkbLineString)
@@ -210,6 +208,11 @@ class RadiationPolygonizer:
                     new_inter = Intersection(self.intersection_id, point.GetX(), point.GetY(), z)
                     self.intersection_list.append(new_inter)
                     self.intersection_id += 1
+                non_ring_flag = False
+        else:
+            non_ring_flag = False
+
+        return non_ring_flag
 
     def _sort_intersection(self, sort_coor, sort, compare, ascend):
         """
@@ -327,7 +330,11 @@ class RadiationPolygonizer:
             geom_id = feat.id
             geom = feat.GetGeometryRef()
 
-            self._count_intersection(geom, region_box, geom_id)
+            non_ring_flag = self._count_intersection(geom, region_box, geom_id)
+
+            if non_ring_flag:
+                print "Non-ring feature!"
+                lines_layer.DeleteFeature(feat.id)
 
         # 2. sort intersection points in anticlockwise order
         self.intersection_sorted = []
