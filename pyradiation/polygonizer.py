@@ -380,6 +380,13 @@ class RadiationPolygonizer:
 
         polygon_sort = sorted(self.polygon_list, key=lambda p: p.elev)
 
+        # Remove duplicit polygons
+        for poly1 in polygon_sort:
+            for poly2 in polygon_sort:
+                if poly1.polygon.Equals(poly2.polygon):
+                    if poly1.id != poly2.id:
+                        polygon_sort.remove(poly2)
+
         for poly in polygon_sort:
 
             # Put geometry inside a feature
