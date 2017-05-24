@@ -5,6 +5,7 @@
 *.loa
 *.lof
 *.log
+*.lot
 *.out
 *.toc
 *.bbl
