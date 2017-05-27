@@ -69,7 +69,7 @@ U hodnoty VALUE je oddělovačem desetinných míst desetinná tečka. Veškerý
 
 \begin{figure}[H]
     \centering
-%      \includegraphics[width=350pt]{./pictures/}
+      \includegraphics[width=375pt]{./pictures/vystupni_report.jpg}
       \caption[Výstupní report]{Ukázka výstupního reportu (autor: Tereza Kulovaná)}
       \label{fig:report}
 \end{figure}
@@ -123,16 +123,18 @@ Tuto základní kostru bylo třeba upravit a rozšířit o další soubory, aby 
 	
 \end{itemize}
 
+\section{Algoritmus}
+
 \begin{figure}[H]
     \centering
-      \includegraphics[width=350pt]{./pictures/ACR_radiacni_pruzkum_polygony_v2.png}
+      \includegraphics[width=350pt]{./pictures/ACR_radiacni_pruzkum_polygony_v3.png}
       \caption[Schematický postup]{Schematický postup (autor: \zk{SÚRO}, v.v.i.)}
       \label{fig:schema}
 \end{figure}
 
 V dalších kapitolách jsou představeny dílčí kroky postupu tvorby koncových zjednodušených polygonů.
 
-\section{Tvorba izolinií}
+\subsection{Tvorba izolinií}
 
 V první fázi jsou ze vstupního gridu vytvořeny izolinie pomocí metody \texttt{ContourGenerate} z knihovny \zk{GDAL}. Vstupní grid ovšem zahrnuje oblast vyňatou ze skutečnosti, což v důsledku znamená, že část izolinií netvoří uzavřené oblasti, ale začíná a končí na hranicích gridu a není uzavřena. Z těchto izolinií by nebylo možné vytvořit polygony, které na vstupu vyžadují uzavřenou oblast. Z tohoto důvodu je třeba tyto linie najít a uzavřít pomocí ohraničujícího obdélníku. 
 
@@ -160,49 +162,55 @@ V prvním kroku jsou určeny izolinie, které nejsou uzavřené (pseudokód~\ref
     \end{algorithmic}
 \end{algorithm}
 
-%\begin{algorithm}
-%\caption{Uzavření linií}
-%\label{alg:closeLines}
-%    \begin{algorithmic}[2] 
-%    \STATE{vrstvaIzolinie = vrstva izolinií vypočítaných pomocí ContourGenerate}
-%    \STATE{izolinie = načti první izolinii z vrstvaIzolinie}
-%    \WHILE{existuje izolinie}
-%    	\IF{izolinie je neuzavřená}
-%    		\STATE{přidej izolinii do uzavíranáIzolinie}
-%    		\STATE{počátečníBod = počáteční bod izolinie}
-%    		\STATE{koncovýBod = koncový bod izolinie}
-%    		\FOR{průsečík z polePrůsečíky}
-%    			\IF{průsečík po Hranici dál než koncovýBod}	
-%    				\IF{úroveňPrůsečík = úroveňIzolinie}								
-%						\STATE{přidej linii mezi koncovýBod a průsečík do uzavíranáIzolinie}
-%						\IF{průsečík = počátečníBod}
-%							\STATE{uzavíranáLinie je uzavřena -> konec výpočtu}
-%							\BREAK
-%						\ELSE
-%							\STATE{pokračuj na řádce ...}
-%						\ENDIF
+V druhém kroku již dochází přímo k uzavírání linií. Základní postup je přidat první izolinii do nově uzavírané linie (pseudokód~\ref{alg:closeLines}-4). Pak jsou procházeny průsečíky na obdélníku, dokud není nalezen další bod se stejnou úrovní radiace (pseudokód~\ref{alg:closeLines}-9) a linie mezi ním a posledním bodem je přidána do nově uzavírané linie (pseudokód~\ref{alg:closeLines}-10). Pokud se jedná o počáteční bod první izolinie, je linie uzavřená (pseudokód~\ref{alg:closeLines}-11). Pokud se jedná o bod z jiné izolinie, je tato izolinie přidána do uzavírané linie (pseudokód~\ref{alg:closeLines}-24) a znovu se hledá další bod se stejnou úrovní radiace. Tento postup se opakuje, dokud poslední přidaný bod neodpovídá počátečnímu bodu první izolinie.
+
+
+\begin{algorithm}
+\caption{Uzavření linií}
+\label{alg:closeLines}
+    \begin{algorithmic}[1] 
+    \STATE{neuzavřenéIzolinie = vrstva neuzavřených izolinií}
+    \STATE{izolinie = načti první izolinii z neuzavřenéIzolinie}
+    \WHILE{existuje izolinie}
+    	\STATE{přidej izolinii do uzavíranáIzolinie}
+    	\STATE{počátečníBod = počáteční bod izolinie}
+    	\STATE{koncovýBod = koncový bod izolinie}
+		\FOR{průsečík z polePrůsečíky}
+    		\IF{průsečík po Hranici dál než koncovýBod}	
+    			\IF{úroveňPrůsečík = úroveňIzolinie}								
+					\STATE{přidej linii mezi koncovýBod a průsečík do uzavíranáIzolinie}
+						\IF{průsečík = počátečníBod}
+							\STATE{uzavíranáLinie je uzavřena -> \textbf{konec výpočtu}}
+						\ELSE
+							\STATE{koncovýBod = průsečík}
+							\STATE{pokračuj na řádku 22}
+						\ENDIF
 %					\ELIF{úroveňPrůsečík = 0}
 %						\STATE{rohHranice = průsečík}
 %						\STATE{přidej linii mezi koncovýBod a rohHranice do uzavíranáIzolinie}
 %						\STATE{koncovýBod = rohHranice}
 %						\STATE{pokračuj s dalším průsečíkem}
-%					\ELSE
-%						\STATE{pokračuj s dalším průsečíkem}
-%					\ENDIF
-%			\ENDFOR
-%			\WHILE{uzavíranáLinie není uzavřená}
-%			
-%		\ENDIF
-%		\STATE{izolinie = načti další izolinii z vrstvaIzolinie}
-%	\ENDWHILE
-%	\STATE{přidej rohové body Hranice do polePrůsečíky}
-%	\STATE{seřaď polePrůsečíky proti směru hodinových ručiček}
-%    \end{algorithmic}
-%\end{algorithm}
+				\ELSE
+					\STATE{pokračuj s dalším průsečíkem}
+				\ENDIF
+			\ENDIF
+		\ENDFOR
+		\WHILE{uzavíranáLinie není uzavřená}
+			\FOR{izolinie z neuzavřenéIzolinie}
+				\IF{počátečníBodIzolinie = koncovýBod}
+					\STATE{přidej izolinii do uzavíranáIzolinie}
+					\STATE{koncovýBod = koncovýBodIzolinie}
+					\STATE{pokračuj na řádce 7}
+				\ENDIF
+			\ENDFOR
+		\ENDWHILE
+		\STATE{izolinie = načti další izolinii z vrstvaIzolinie}
+	\ENDWHILE
+    \end{algorithmic}
+\end{algorithm}
 
-% \section{Generalizace}
+\subsection{Tvorba polygonů}
 
-\section{Tvorba polygonů}
-
+% \subsection{Generalizace}
 
 \section{Licence}
