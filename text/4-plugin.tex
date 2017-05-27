@@ -211,6 +211,68 @@ V druhém kroku již dochází přímo k uzavírání linií. Základní postup 
 
 \subsection{Tvorba polygonů}
 
-% \subsection{Generalizace}
+Z uzavřených izolinií jsou pomocí metody \texttt{BuildPolygonFromEdges} z knihovny \zk{OGR} vytvořeny polygony. Následně jsou zjednodušeny s využitím metody \texttt{Simplify} ze stejné knihovny. Nakonec jsou souřadnice zjednodušených polygonů převedeny do systému \zk{MGRS} a vypsány do textového reportu kompatibilního s formátem dle APP-11. %odkaz na textový report
 
-\section{Licence}
+\begin{algorithm}
+\caption{Tvorba a zjednodušení polygonů}
+\label{alg:polygon}
+    \begin{algorithmic}[1] 
+    \STATE{uzavřenéIzolinie = vrstva uzavřených izolinií}
+    \STATE{izolinie = načti první izolinii z uzavřenéIzolinie}
+    \WHILE{existuje izolinie}
+		\STATE{vytvoř polygon metodou \texttt{BuildPolygonFromEdges}}
+		\STATE{tolerance = prvotní volba tolerance}
+		\WHILE{True}
+			\STATE{zjednoduš polygon metodou \texttt{Simplify} s danou tolerancí}
+			\IF{počet bodů v polygonu < 50}
+				\STATE{konec}
+			\ELSE
+				\STATE{tolerance = větší tolerance}
+			\ENDIF
+		\ENDWHILE	
+		\STATE{izolinie = načti další izolinii z vrstvaIzolinie}
+	\ENDWHILE
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Generalizace}
+	Metoda \texttt{Simplify} z knihovny \textbf{GDAL} využívá ke zjednodušení linie algoritmus Douglas–Peucker (pseudokód~\ref{alg:RDP}). Tento algoritmus patří k nejčastěji používaným generalizačním algoritmům v oblasti \zk{GIS}. Na rozdíl od většiny generalizačních algoritmů neodstraňuje z původní linie body nesplňující geometrickou podmínku, ale naopak vytváří novou linii tvořenou body, které podmínku splňují. 
+	
+	Jedná se o rekurzivní algoritmus, který při zjednodušení řetězce mezi body \textit{A} a \textit{B} vezme hranu \textit{AB}. Pokud nejvzdálenější bod (\textit{C}) původní linie je maximálně ve vzdálenosti rovnající toleranci \textit{T}, pak je aproximace hrany dostatečná. V opačném případě rozdělí hranu \textit{AB} v daném bodě \textit{C}, čímž vzniknou hrany \textit{AC} a \textit{CB}. Ty jsou pak rekurzivně aproximovány stejným postupem. \cite{hershberger1992speeding}
+	
+%	Jedná se o rekurzivní algoritmus, který kolem hrany (spojnice dvou bodů z nové linie) hledá body z původní linie mimo koridor o zadané toleranci T. Pokud žádný takový nenajde, hrana zůstane stejná. Pokud nějaký bod mimo koridor existuje, najde ten, který od hrany leží nejdále a vloží ho nové linie. Tím se původní hrana rozdělí na dvě. Následně testuje stejnou podmínku na nově vytvořených kratších spojnicích. 
+
+\begin{figure}[H]
+    \centering
+      \includegraphics[width=350pt]{./pictures/DPalgoritmus.jpg}
+      \caption[Ilustrace DP]{Ilustrace Douglas-Peucker algoritmu (zdroj: Ing. Tomáš Bayer, Ph.D., Přírodovědecká fakulta UK)}
+      \label{fig:DPalgo}
+\end{figure}
+	
+\begin{algorithm}
+\caption{Douglas–Peuckerův algoritmus}
+\label{alg:RDP}
+    \begin{algorithmic}[1] 
+    \STATE{\textbf{funkce} DouglasPeucker(listBodů[], tolerance)}
+    \STATE{dMax = 0}
+    \STATE{index = 0}
+    \STATE{početBodů = délka(listBodů)}
+    \FOR{i = řada od 2 do (početBodů - 1)}
+		\STATE{d = vzdálenost(listBodů[i], hrana(listBodů[1], listBodů[početBodů]))}
+		\IF{d > dMax}
+			\STATE{index = i}
+			\STATE{dMax = d}
+		\ENDIF	
+	\ENDFOR
+	\IF{dMax > tolerance}
+		\STATE{rekurze1 = DouglasPeucker(listBodů[1...index], tolerance)}
+		\STATE{rekurze2 = DouglasPeucker(listBodů[index...početBodů], tolerance)}
+		\STATE{výslednýList = {rekurze1[1...délka(rekurze1)-1], rekurze2[1...délka(rekurze2)]}}
+	\ELSE
+		\STATE{výslednýList = {listBodů[1], listBodů[početBodů]}}
+	\ENDIF
+	\STATE{\textbf{return} výslednýList[]}
+    \end{algorithmic}
+\end{algorithm}	
+		
+	Tento algoritmus nezachovává vzájemnou polohu linií, je tedy nutné ještě dalšími úpravami ošetřit, aby se zjednodušené polygony vzájemně neprotínaly. Tyto úpravy jsou však velmi časově náročné a autorka je před odevzdáním bakalářské práce nestihla implementovat. Pro správnou funkčnost zásuvného modulu jsou však nutné a bude na nich pokračovat po odevzdání.
