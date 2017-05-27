@@ -22,17 +22,17 @@ Mapa obsahuje hodnoty dávkového příkonu v jednotkách cGy/h. Je v souřadnic
 
 \begin{figure}[H]
     \centering
-      \includegraphics[width=350pt]{./pictures/chagan_spline.jpg}
+      \includegraphics[width=300pt]{./pictures/chagan_spline.jpg}
       \caption[Interpolovaná mapa]{Interpolovaná mapa dávkového příkonu (Chagan Lake) (autor: Tereza Kulovaná, data: \zk{AČR})}
       \label{fig:spline}
 \end{figure}
 
-Bodová data pro testování poskytla \zk{AČR}. Jedná se o hodnoty simulované pro účely cvičení umístěné do oblasti jezera Chagan (přezdívaného "Atomic lake") v Kazachstánu. Toto jezero vzniklo v roce 1965 jako důsledek sovětského podzemního jaderného testu (ekvivalentní 140 kt TNT)\cite{Nordyke2000}.
+Bodová data pro testování poskytla \zk{AČR}. Jedná se o hodnoty simulované pro účely cvičení umístěné do oblasti jezera Chagan (přezdívaného "Atomic lake") v Kazachstánu. Toto jezero vzniklo v roce 1965 jako důsledek sovětského podzemního jaderného testu (ekvivalentní 140 kt TNT) \cite{Nordyke2000}.
 
 Atributová tabulka bodových dat obsahuje informace o měřených hodnotách dávkového příkonu a plošné aktivity, souřadnicích X a Y. Interpolovaná mapa dávkového příkonu, resp. plošné aktivity, byla vytvořena pomocí metody Multilevel B-Spline Interpolation v open source \zk{GIS} softwaru SAGA\footnote{\url{http://www.saga-gis.org/saga_tool_doc/2.1.3/grid_spline_4.html}}.
   
 \begin{figure}[H] \centering
-      \includegraphics[width=250pt]{./pictures/chagan_attr.jpg}
+      \includegraphics[width=270pt]{./pictures/chagan_attr.jpg}
       \caption[Atributová tabulka bodových dat (Chagan Lake)]{Atributová tabulka bodových dat (Chagan Lake) (autor: Tereza Kulovaná, data: \zk{AČR})}
       \label{fig:attributes}
 \end{figure}
@@ -42,7 +42,10 @@ Atributová tabulka bodových dat obsahuje informace o měřených hodnotách d�
 \begin{enumerate}
 	\item \textbf{Report}
 
-Povinným výstupem zásuvného modulu je textový report s příponou \textit{.txt}, který obsahuje souřadnice lomových bodů zjednodušených polygonů v hlásném systému \zk{MGRS}. Výstupní report je součástí \zk{MTF} zprávy, proto musí splňovat přesně daný formát specifikovaný v katalogu APP-11. Jeden řádek reportu obsahuje:
+Povinným výstupem zásuvného modulu je textový report s příponou \textit{.txt}, který obsahuje souřadnice lomových bodů zjednodušených polygonů v hlásném systému \zk{MGRS}. Výstupní report je součástí \zk{MTF} zprávy, proto musí splňovat přesně daný formát specifikovaný v katalogu APP-11. 
+
+\newpage
+Jeden řádek reportu obsahuje:
 
 /[VALUE][UNIT]/MGRS:[COORDINATE]/MGRS:[COORDINATE]//
 
@@ -87,10 +90,12 @@ Volitelným výstupem zásuvného modulu je soubor s polygony. Soubor je v souř
 
 \begin{figure}[H]
     \centering
-%      \includegraphics[width=350pt]{./pictures/}
+      \includegraphics[width=300pt]{./pictures/vystupni_polygony.jpg}
       \caption[Výstupní polygony]{Ukázka výstupního souboru polygonů (autor: Tereza Kulovaná)}
       \label{fig:polygony}
 \end{figure}
+
+% obrázek bude upraven (z důvodu správného rozložení stránek)
 
 \end{enumerate}
 
@@ -195,7 +200,13 @@ V druhém kroku již dochází přímo k uzavírání linií. Základní postup 
 				\ENDIF
 			\ENDIF
 		\ENDFOR
-		\WHILE{uzavíranáLinie není uzavřená}
+	\algstore{myalg}
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+	\begin{algorithmic} [1] \algrestore{myalg}
+				\WHILE{uzavíranáLinie není uzavřená}
 			\FOR{izolinie z neuzavřenéIzolinie}
 				\IF{počátečníBodIzolinie = koncovýBod}
 					\STATE{přidej izolinii do uzavíranáIzolinie}
@@ -209,9 +220,10 @@ V druhém kroku již dochází přímo k uzavírání linií. Základní postup 
     \end{algorithmic}
 \end{algorithm}
 
+\newpage
 \subsection{Tvorba polygonů}
 
-Z uzavřených izolinií jsou pomocí metody \texttt{BuildPolygonFromEdges} z knihovny \zk{OGR} vytvořeny polygony. Následně jsou zjednodušeny s využitím metody \texttt{Simplify} ze stejné knihovny. Nakonec jsou souřadnice zjednodušených polygonů převedeny do systému \zk{MGRS} a vypsány do textového reportu kompatibilního s formátem dle APP-11. %odkaz na textový report
+Z uzavřených izolinií jsou pomocí metody \texttt{BuildPolygonFromEdges} z knihovny OGR vytvořeny polygony. Následně jsou zjednodušeny s využitím metody \texttt{Simplify} ze stejné knihovny. Nakonec jsou souřadnice zjednodušených polygonů převedeny do systému \zk{MGRS} a vypsány do textového reportu kompatibilního s formátem dle APP-11. %odkaz na textový report
 
 \begin{algorithm}
 \caption{Tvorba a zjednodušení polygonů}
@@ -235,8 +247,9 @@ Z uzavřených izolinií jsou pomocí metody \texttt{BuildPolygonFromEdges} z kn
     \end{algorithmic}
 \end{algorithm}
 
+\newpage
 \subsubsection{Generalizace}
-	Metoda \texttt{Simplify} z knihovny \textbf{GDAL} využívá ke zjednodušení linie algoritmus Douglas–Peucker (pseudokód~\ref{alg:RDP}). Tento algoritmus patří k nejčastěji používaným generalizačním algoritmům v oblasti \zk{GIS}. Na rozdíl od většiny generalizačních algoritmů neodstraňuje z původní linie body nesplňující geometrickou podmínku, ale naopak vytváří novou linii tvořenou body, které podmínku splňují. 
+	Metoda \texttt{Simplify} z knihovny \zk{GDAL} využívá ke zjednodušení linie algoritmus Douglas–Peucker (pseudokód~\ref{alg:RDP}). Tento algoritmus patří k nejčastěji používaným generalizačním algoritmům v oblasti \zk{GIS}. Na rozdíl od většiny generalizačních algoritmů neodstraňuje z původní linie body nesplňující geometrickou podmínku, ale naopak vytváří novou linii tvořenou body, které podmínku splňují. 
 	
 	Jedná se o rekurzivní algoritmus, který při zjednodušení řetězce mezi body \textit{A} a \textit{B} vezme hranu \textit{AB}. Pokud nejvzdálenější bod (\textit{C}) původní linie je maximálně ve vzdálenosti rovnající toleranci \textit{T}, pak je aproximace hrany dostatečná. V opačném případě rozdělí hranu \textit{AB} v daném bodě \textit{C}, čímž vzniknou hrany \textit{AC} a \textit{CB}. Ty jsou pak rekurzivně aproximovány stejným postupem. \cite{hershberger1992speeding}
 	
@@ -244,7 +257,7 @@ Z uzavřených izolinií jsou pomocí metody \texttt{BuildPolygonFromEdges} z kn
 
 \begin{figure}[H]
     \centering
-      \includegraphics[width=350pt]{./pictures/DPalgoritmus.jpg}
+      \includegraphics[width=300pt]{./pictures/DPalgoritmus.jpg}
       \caption[Ilustrace DP]{Ilustrace Douglas-Peucker algoritmu (zdroj: Ing. Tomáš Bayer, Ph.D., Přírodovědecká fakulta UK)}
       \label{fig:DPalgo}
 \end{figure}
@@ -274,5 +287,6 @@ Z uzavřených izolinií jsou pomocí metody \texttt{BuildPolygonFromEdges} z kn
 	\STATE{\textbf{return} výslednýList[]}
     \end{algorithmic}
 \end{algorithm}	
-		
+
+\newpage		
 	Tento algoritmus nezachovává vzájemnou polohu linií, je tedy nutné ještě dalšími úpravami ošetřit, aby se zjednodušené polygony vzájemně neprotínaly. Tyto úpravy jsou však velmi časově náročné a autorka je před odevzdáním bakalářské práce nestihla implementovat. Pro správnou funkčnost zásuvného modulu jsou však nutné a bude na nich pokračovat po odevzdání.
