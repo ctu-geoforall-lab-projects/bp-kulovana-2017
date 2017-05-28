@@ -437,11 +437,12 @@ po odevzdání.
 			\STATE{dMax = d}
 		\ENDIF	
 	\ENDFOR
+	\algstore{alg2}
 	\end{algorithmic}
 \end{algorithm}	
 
 \begin{algorithm}
-    \begin{algorithmic}[1] 
+    \begin{algorithmic}[1] \algrestore{alg2}
 	\IF{dMax > tolerance}
 		\STATE{rekurze1 = DouglasPeucker(listBodů[1...index], tolerance)}
 		\STATE{rekurze2 = DouglasPeucker(listBodů[index...početBodů], tolerance)}
