@@ -1,10 +1,11 @@
 \chapter{Zásuvný modul}
 \label{4-plugin}
 
-Ve 4. kapitole jsou objasněny stěžejní kroky tvorby zásuvného modulu
+Ve této kapitole jsou objasněny stěžejní kroky tvorby zásuvného modulu
 \textit{Radiation reconnaissance results}, popsány vstupní a výstupní
-soubory. Při tvorbě modulu byly využívány příručky ... a stránky
-...\cite{diveIntoPython}
+%%% ML: vetu dokoncit...
+datové soubory. Při tvorbě modulu byly využívány příručky ... a
+stránky ...\cite{diveIntoPython}
 
 \section{Vstupní data}
 
@@ -38,13 +39,13 @@ příkonu, nebo plošné aktivity.
 
 Bodová data pro testování poskytla \zk{AČR}. Jedná se o hodnoty
 simulované pro účely cvičení umístěné do oblasti jezera Chagan
-(přezdívaného "Atomic lake") v Kazachstánu. Toto jezero vzniklo v roce
-1965 jako důsledek sovětského podzemního jaderného testu (ekvivalentní
+(přezdívaného "Atomic lake") v~Kazachstánu. Toto jezero vzniklo v roce
+1965 jako důsledek sovětského podzemního jader\-ného testu (ekvivalentní
 140 kt TNT) \cite{Nordyke2000}.
 
 Atributová tabulka bodových dat obsahuje informace o měřených
 hodnotách dávkového příkonu a plošné aktivity, souřadnicích X a
-Y. Interpolovaná mapa dávkového příkonu, resp. plošné aktivity, byla
+Y. Interpolovaná mapa dávko\-vého příkonu, resp. plošné aktivity, byla
 vytvořena pomocí metody Multilevel B-Spline Interpolation v open
 source \zk{GIS} softwaru
 SAGA\footnote{\url{http://www.saga-gis.org/saga_tool_doc/2.1.3/grid_spline_4.html}}.
@@ -101,7 +102,8 @@ obsahovat maximálně 12 znaků. Pole č. 2 může mít až 50 opakování
 obsahovat maximálně 15 znaků. Poslední souřadnice je zakončena
 dvojitým lomítkem (označuje konec řádku). Vše mezi prvním lomítkem a
 dvojitým ukončovacím lomítkem se nazývá řádek. Jednotlivé řádky musí
-být odděleny entrem.
+%%% ML: enterem -> zalomeni radky (btw. pouziva se Unixovy nebo Windows zapis?)
+být odděleny znakem zalomení řádky.
 
 \begin{figure}[H]
     \centering
@@ -121,18 +123,19 @@ se jedná o soubor s názvem \texttt{mgrs.py} a v něm obsaženou metodu
 
 	\item \textbf{Soubor polygonů}
 	
-          Volitelným výstupem zásuvného modulu je soubor s
-          polygony. Soubor je v souřadnicovém systému \zk{WGS 84}
-          (EPGS:4326) ve formátu Esri Shapefile
-          (\textit{.shp}). Obsahuje geometrie zjednodušených polygonů
-          různě graficky odlišené podle jednotlivých úrovní
-          radiace. Atributová tabulka obsahuje:
+          Volitelným výstupem zásuvného modulu je datový soubor s
+          polygonovými prvky. Data jsou lokalizována v souřadnicovém
+          systému \zk{WGS 84} (EPGS:4326) ve formátu Esri Shapefile
+          (\textit{.shp}). Datový soubor obsahuje geometrie
+          zjednodušených polygonů různě graficky odlišené podle
+          jednotlivých úrovní radiace. Atributová tabulka obsahuje:
 
 		\begin{itemize}
 			\item{identifikační číslo polygonu}
 			\item{úroveň radiace}
 		\end{itemize}
 
+%%% ML: symbolizovat podle nejake vhodne skaly?
 \begin{figure}[H]
     \centering
       \includegraphics[width=300pt]{./pictures/vystupni_polygony.jpg}
@@ -153,7 +156,7 @@ tohoto modulu je skupina GeoApt LLC specializující se na rozvoj open
 source softwaru. Po zadání povinných vstupních informací
 \textit{Plugin Builder} vyprodukuje kostru zásuvného modulu tvořenou
 mj. prvotním grafickým uživatelským rozhraním, základními funkcemi,
-vazbami a automatickou ikonou.
+vazbami a~vychozí ikonkou.
 
 Tuto základní kostru bylo třeba upravit a rozšířit o další soubory,
 aby bylo docíleno očekávané funkčnosti. Mezi nejdůležitější prvky
@@ -172,12 +175,12 @@ zásuvného modulu patří několik navzájem provázaných souborů:
 	\item \textbf{radiation\_reconnaissance\_results.py} 
 	
           Zajišťuje implementaci zásuvného modulu do prostředí QGIS -
-          načtení ikony s názvem do nástrojové lišty, aktivaci modulu
+          načtení ikonky s~názvem do nástrojové lišty, aktivaci modulu
           a v případě zavření jeho destrukci.
 
 	\item \textbf{radiation\_reconnaissance\_results\_dockwidget.py}
 	
-          Obstarává propojení se souborem
+          Obstarává propojení se souborem\\
           \textbf{radiation\_reconnaissance\_results\_dockwidget\_base.ui},
           po jehož zavolání se zobrazí grafické uživatelské rozhraní
           vytvořené pomocí Qt Designer. Obsahuje třídu
@@ -189,12 +192,17 @@ zásuvného modulu patří několik navzájem provázaných souborů:
           zadána cesta k výstupnímu reportu.
 
 	\item \textbf{pyradiation}
-		
+
+          %%% ML: Zminit, ze jde o knihovnu, ktera neni zavisla na
+          %%% QGIS pluginu a muze byt pouzivata mimo nej, to je
+          %%% dulezite
           Adresář \textbf{pyradiation} zahrnuje několik vzájemně
           provázaných souborů zajišťujících výpočty a tvorbu
+          %%% ML: spise nez o souboru muzete mluvit o "modulu" Jinak
+          %%% na tomto miste zminte hlavne dane tridy
           výstupů. V souboru \textbf{isolines.py} jsou ze vstupního
           gridu vytvořeny izolinie v uživatelem zvolených úrovních
-          radiace. Soubor s izoliniemi je předán dále do
+          radiace. Datový soubor s~izoliniemi je předán dále do
           \textbf{polygonizer.py}, kde jsou z nich vytvořeny
           zjednodušené polygony pomocí generalizace obsažené v souboru
           \textbf{generalizer.py}. Na závěr jsou v \textbf{report.py}
@@ -219,7 +227,8 @@ koncových zjednodušených polygonů.
 \subsection{Tvorba izolinií}
 
 V první fázi jsou ze vstupního gridu vytvořeny izolinie pomocí metody
-\texttt{ContourGenerate} z knihovny \zk{GDAL}. Vstupní grid ovšem
+\texttt{Contour\-Generate} z knihovny \zk{GDAL}. Vstupní grid ovšem
+%%% ML: skutecnost -> okoli ?
 zahrnuje oblast vyňatou ze skutečnosti, což v důsledku znamená, že
 část izolinií netvoří uzavřené oblasti, ale začíná a končí na
 hranicích gridu a není uzavřena. Z těchto izolinií by nebylo možné
@@ -228,7 +237,7 @@ důvodu je třeba tyto linie najít a uzavřít pomocí ohraničujícího
 obdélníku.
 
 V prvním kroku jsou určeny izolinie, které nejsou uzavřené
-(pseudokód~\ref{alg:getIntersection}-4), a pro ně jsou vypočítány
+(pseudokód~\ref{alg:getIntersection}-4), a~pro ně jsou vypočítány
 průsečíky s ohraničujícím obdélníkem
 (pseudokód~\ref{alg:getIntersection}-5). Tyto průsečíky linií jsou
 přidány do pole průsečíků (pseudokód~\ref{alg:getIntersection}-9)
@@ -338,6 +347,7 @@ zjednodušených polygonů převedeny do systému \zk{MGRS} a vypsány do
 textového reportu kompatibilního s formátem dle
 APP-11. %odkaz na textový report
 
+%%% ML: rozdelit do dvou stranek... (detail, klidne to tak nechate)
 \begin{algorithm}
 \caption{Tvorba a zjednodušení polygonů}
 \label{alg:polygon}
@@ -360,6 +370,7 @@ APP-11. %odkaz na textový report
     \end{algorithmic}
 \end{algorithm}
 
+%%% ML: po rozdeleni nebude nova stranka treba
 \newpage
 \subsubsection{Generalizace}
 Metoda \texttt{Simplify} z knihovny \zk{GDAL} využívá ke zjednodušení
@@ -370,7 +381,7 @@ neodstraňuje z původní linie body nesplňující geometrickou podmínku,
 ale naopak vytváří novou linii tvořenou body, které podmínku splňují.
 	
 Jedná se o rekurzivní algoritmus, který při zjednodušení řetězce mezi
-body \textit{A} a \textit{B} vezme hranu \textit{AB}. Pokud
+body \textit{A} a~\textit{B} vezme hranu \textit{AB}. Pokud
 nejvzdálenější bod (\textit{C}) původní linie je maximálně ve
 vzdálenosti rovnající toleranci \textit{T}, pak je aproximace hrany
 dostatečná. V opačném případě rozdělí hranu \textit{AB} v daném bodě
@@ -385,6 +396,8 @@ postupem. \cite{hershberger1992speeding}
 % hrany leží nejdále a vloží ho nové linie. Tím se původní hrana
 % rozdělí na dvě. Následně testuje stejnou podmínku na nově
 % vytvořených kratších spojnicích.
+
+%%% ML: tady opet text nevychazi dobre...
 
 \begin{figure}[H]
     \centering
@@ -419,6 +432,8 @@ postupem. \cite{hershberger1992speeding}
     \end{algorithmic}
 \end{algorithm}	
 
+%%% ML: umele pouzit newpage (chtelo by text na poslednich 3-5
+%%% strankach vice sladit (az bude finalni)
 \newpage		
 Tento algoritmus nezachovává vzájemnou polohu linií, je tedy nutné
 ještě dalšími úpravami ošetřit, aby se zjednodušené polygony vzájemně
