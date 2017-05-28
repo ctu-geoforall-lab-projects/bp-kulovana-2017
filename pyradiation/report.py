@@ -5,7 +5,7 @@ from .exception import RadiationError
 import mgrs
 
 
-class Report:
+class RadiationReport:
     def __init__(self, path, index):
 
         """

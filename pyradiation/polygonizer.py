@@ -121,8 +121,12 @@ class RadiationPolygonizer:
                         break
             # else:
             #     print "ukonceny cyklus"
+            # print "id nove uzavrene linie: {}".format(line_id)
+            #if line_id < 2:
+            #    print multiline
             return multiline
         else:
+            # print "id puvodne uzavrene linie: {}".format(line_id)
             return geom
 
     def _find_next_point(self, z, id_prev, start_main, multiline, reverse):
@@ -363,18 +367,10 @@ class RadiationPolygonizer:
             geom_closed = self._close_line(geom, geom_id)
             geom_closed2 = self._close_line(geom, geom_id, reverse = True)
 
-            # 4. perform generalization if defined
-            if self.generalizer:
-                geom_simplified = self.generalizer.perform(geom_closed)
-                geom_simplified2 = self.generalizer.perform(geom_closed2)
-            else:
-                geom_simplified = geom_closed
-                geom_simplified2 = geom_closed2
-
             # 5. create polygons from closed lines
             z = geom.GetZ(0)
-            self._create_polygon(geom_simplified, i+1, z)
-            self._create_polygon(geom_simplified2, i, z)
+            self._create_polygon(geom_closed, i+1, z)
+            self._create_polygon(geom_closed2, i, z)
 
             i += 2
 
@@ -387,7 +383,19 @@ class RadiationPolygonizer:
                     if poly1.id != poly2.id:
                         polygon_sort.remove(poly2)
 
+        self.polygon_list = []
         for poly in polygon_sort:
+            i = poly.id
+            if self.generalizer:
+                poly_simplified = self.generalizer.perform(poly.polygon, i)
+            else:
+                poly_simplified = poly.polygon
+            z = poly.elev
+            # Add polygon to polygon_list
+            new_poly = MyPolygon(i, z, poly_simplified)
+            self.polygon_list.append(new_poly)
+
+        for poly in self.polygon_list:
 
             # Put geometry inside a feature
             layerDefinition = self.output_layer.GetLayerDefn()
@@ -402,13 +410,13 @@ class RadiationPolygonizer:
             self.output_layer.CreateFeature(feature)
             feature = None
 
-        rep = report.Report(self.reportFileName, index)
-        pom = 0
-        for poly in polygon_sort:
+        rep = report.RadiationReport(self.reportFileName, index)
+        # pom = 0
+        for poly in self.polygon_list:
             rep.write_polygon(poly)
-            pom += 1
-            if pom == 3:
-                break
+            # pom += 1
+            # if pom == 3:
+            #   break
         rep.close()
 
             # 6. write polygons to output

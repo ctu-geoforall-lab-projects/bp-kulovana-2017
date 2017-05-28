@@ -33,6 +33,7 @@ from osgeo import gdal, ogr
 
 from pyradiation import isolines
 from pyradiation import polygonizer
+from pyradiation import generalizer
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'radiation_reconnaissance_results_dockwidget_base.ui'))
@@ -210,8 +211,10 @@ class RadiationReconnaissanceResultsDockWidget(QtGui.QDockWidget, FORM_CLASS):
         rc.generate(self.levels)
         # print('{} generated'.format(output))
 
+        rg = generalizer.RadiationGeneralizer()
+
         # polygonization
-        rp = polygonizer.RadiationPolygonizer(rc, self.saveReportName)
+        rp = polygonizer.RadiationPolygonizer(rc, self.saveReportName, rg)
         if self.check_shp.isChecked():
             output_filename = '{}_polygons.shp'.format(
                 os.path.splitext(os.path.basename(raster))[0]
