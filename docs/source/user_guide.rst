@@ -114,7 +114,7 @@ Output data
    
 * File of simplified polygons (optional)
   
-  File of polygons in format ESRI SHAPEFILE (.shp) is created if check box is 
+  File of polygons in format Esri Shapefile (.shp) is created if check box is 
   checked. It is saved in the same directory as input raster file.
 
  .. figure:: images/output_polygons.jpg
