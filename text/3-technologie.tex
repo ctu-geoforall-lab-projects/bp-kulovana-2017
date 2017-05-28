@@ -16,7 +16,7 @@ tvorbě zásuvného modulu.
 QGIS (dříve známý pod názvem Quantum GIS) je multiplatformní volně
 dostupný geografický informační systém (\zk{GIS}). Umožňuje uživateli
 prohlížet, vytvářet, analyzovat a editovat jak vektorová, tak rastrová
-prostorová data.
+geografická data.
 
 Vývoj započal v roce 2002 Gary Sherman, dnes ho spravuje skupina
 dobrovolníků a je vyvíjen pod hlavičkou Open Source Geospatial
@@ -29,7 +29,7 @@ dostačující.
 QGIS je vyvíjen v jazyku C++, jeho grafické rozhraní využívá knihovnu
 Qt. Je podporován na operačních systémech Microsoft Windows, Mac OS X,
 Linux a Unix, od roku 2014 existuje experimentální verze pro
-Android\footnote{http://www.qgis.org/en/site/forusers/download.html}. Základní
+Android\footnote{\url{http://www.qgis.org/en/site/forusers/download.html}}. Základní
 funkcionalitu pomáhají rozšířit zásuvné moduly psané v jazyce Python
 nebo C++. Je propojen s dalšími open source GIS balíčky jako jsou
 např. GRASS GIS, PostGIS nebo MapServer. QGIS je uvolněn pod licencí
@@ -60,18 +60,19 @@ základním stavebním kamenem a je povinné.
 Guido van Rossum, autor první verze Pythonu vydané v roce 1991, se
 rozhodl vyřešit nedostatečnost jazyků, které byly používány v jeho
 zaměstnání, a napsat jazyk splňující jeho potřeby. Při vývoji se
-inspiroval především v jazycích ABC a Modula-3. Jednou ze snah bylo
-vytvoření jazyka otevřeného dalším rozšířením a propojením s jinými
+inspiroval především v jazycích ABC a~Modula-3. Jednou ze snah bylo
+vytvoření jazyka otevřeného dalším rozšířením a~propojením s jinými
 jazyky (např. C++). Dnes je Python vyvíjen jako open source projekt
-pod záštitou neziskové the Python Software Foundation (\zk{PSF}). Je
-distribuován pod licencí (\zk{PSF}), která je s (\zk{GPL})
-kompatibilní. Je možné ho nainstalovat na běžné platformy jako
-Windows, Unix nebo Mac OS, pro Linux je většinou součástí základní
-instalace. Při vyvarování se systémově závislých funkcí je
+pod záštitou neziskové organizace Python Software Foundation
+(\zk{PSF}). Je distribuován pod licencí \zk{PSF}, která je
+kompatibilní s \zk{GPL}. Je možné ho nainstalovat na běžné platformy
+jako Windows, Unix nebo Mac OS, pro Linux je většinou součástí
+základní instalace. Při vyvarování se systémově závislých funkcí je
 přenositelný mezi platformami bez jakýchkoli změn.
 
 Python má široké využití, od jednoduchých programů po rozsáhlé
 aplikace. Právě pro tyto možnosti, univerzálnost, přehlednost kódu a
+%%% ML: sila? ta veta zni divne
 síla z něj udělaly programovací jazyk, který je mezi začátečníky ve
 velké oblibě. Během krátké doby v něm funkční skript zvládne napsat
 každý.
@@ -80,6 +81,7 @@ každý.
   
 \section{GDAL}
 
+%%% ML: pridat logo? (pro zachovani konzistence)
 Geospatial Data Abstraction Library (\zk{GDAL}) je knihovna určená pro
 čtení a zápis rastrových a vektorových geodat. Od verze GDAL 2.0 došlo
 k pevnějšímu propojení dvou původně oddělených knihoven - GDAL,
@@ -91,9 +93,10 @@ převedena na GDAL/OGR Project Management Committee, která je součástí
 
 GDAL/OGR je napsána v jazyce ANSI C a C++ a lze ji použít na
 operačních systémech Linux, Solaris, Mac OS X a Microsoft
-Windows. Knihovna GDAL je vydávána pod licencí X/MIT. (4) Pro projekce
-a transformace využívá knihovnu PROJ.4. V květnu 2017 byla vydána
-zatím poslední verze GDAL 2.2.0. (4)
+%%% ML: (4) ???
+Windows. Knihovna GDAL je vydávána pod licencí X/MIT. (4) Pro práci se
+souřadnicovými systémy a transformaci mezi nimi využívá knihovnu
+PROJ.4. V květnu 2017 byla vydána zatím poslední verze GDAL 2.2.0. (4)
 
 Díky rozsáhlému množství funkcionalit je využívána v komerční i
 nekomerční sféře a v oblasti GIS patří mezi hlavní free software
@@ -110,7 +113,7 @@ projekty.
       \label{fig:qt}
   \end{figure}
 
-Qt je framework\footnote{multiplatformní aplikační rámec} knihoven a
+Qt je framework\footnote{Multiplatformní aplikační rámec} knihoven a
 nástrojů, jenž je široce využíván pro tvorbu multiplatformních
 aplikací a grafických uživatelských rozhraní. Svou oblibu si vysloužil
 právě funkčností na různých softwarových i hardwarových platformách,
@@ -133,7 +136,7 @@ PyQt a PySide.
 
 Správa a vývoj PyQt spadá pod firmu Riverbank Computing Limited. PyQt
 je dostupný pod podobnou licencí jako Qt, tedy GNU \zk{GPL} 2.0, GNU
-\zk{GPL} 3.0 a komerční licencí.
+\zk{GPL} 3.0 a~komerční licencí.
 
 % (6) https://wiki.python.org/moin/PyQt
 
