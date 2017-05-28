@@ -59,6 +59,7 @@ SAGA\footnote{\url{http://www.saga-gis.org/saga_tool_doc/2.1.3/grid_spline_4.htm
 \end{figure}
 
 \section{Výstupní data}
+\label{output}
 
 \begin{enumerate}
 	\item \textbf{Report}
@@ -103,6 +104,7 @@ obsahovat maximálně 15 znaků. Poslední souřadnice je zakončena
 dvojitým lomítkem (označuje konec řádku). Vše mezi prvním lomítkem a
 dvojitým ukončovacím lomítkem se nazývá řádek. Jednotlivé řádky musí
 %%% ML: enterem -> zalomeni radky (btw. pouziva se Unixovy nebo Windows zapis?)
+%%% TK: používám os.linesep, mám to nahradit \n?
 být odděleny znakem zalomení řádky.
 
 \begin{figure}[H]
@@ -136,6 +138,7 @@ se jedná o soubor s názvem \texttt{mgrs.py} a v něm obsaženou metodu
 		\end{itemize}
 
 %%% ML: symbolizovat podle nejake vhodne skaly?
+%%% TK: přidán barevnější obrázek
 \begin{figure}[H]
     \centering
       \includegraphics[width=300pt]{./pictures/vystupni_polygony.jpg}
