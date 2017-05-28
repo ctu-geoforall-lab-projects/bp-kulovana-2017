@@ -114,8 +114,8 @@ být odděleny znakem zalomení řádky.
       \label{fig:report}
 \end{figure}
 
-QGIS nemá nativní podporu souřadnic v \zk{MGRS}. Pro převod z \zk{WGS
-  84} do \zk{MGRS} byla jako nejvhodnější z dostupných variant zvolena
+QGIS nemá nativní podporu souřadnic v \zk{MGRS}. Pro převod z~\zk{WGS
+  84} do~\zk{MGRS} byla jako nejvhodnější z dostupných variant zvolena
 část kódu již existujícího zásuvného modulu \textit{Lat Lon Tools
   Plugin}\footnote{\url{https://github.com/NationalSecurityAgency/qgis-latlontools-plugin}}. Konkrétně
 se jedná o soubor s názvem \texttt{mgrs.py} a v něm obsaženou metodu
@@ -199,16 +199,20 @@ zásuvného modulu patří několik navzájem provázaných souborů:
           %%% ML: Zminit, ze jde o knihovnu, ktera neni zavisla na
           %%% QGIS pluginu a muze byt pouzivata mimo nej, to je
           %%% dulezite
-          Adresář \textbf{pyradiation} zahrnuje několik vzájemně
-          provázaných souborů zajišťujících výpočty a tvorbu
+          Adresář \textbf{pyradiation} obsahuje knihovnu několika 
+          vzájemně provázaných modulů zajišťujících výpočty a tvorbu
           %%% ML: spise nez o souboru muzete mluvit o "modulu" Jinak
           %%% na tomto miste zminte hlavne dane tridy
-          výstupů. V souboru \textbf{isolines.py} jsou ze vstupního
+          výstupů. Tato knihovna čerpá pouze z knihovny \zk{GDAL} a 
+          lze ji využít nezávisle na QGIS modulu.
+
+          Ve třídě \texttt{RadiationIsolines} jsou ze vstupního
           gridu vytvořeny izolinie v uživatelem zvolených úrovních
-          radiace. Datový soubor s~izoliniemi je předán dále do
-          \textbf{polygonizer.py}, kde jsou z nich vytvořeny
-          zjednodušené polygony pomocí generalizace obsažené v souboru
-          \textbf{generalizer.py}. Na závěr jsou v \textbf{report.py}
+          radiace. Datový soubor s~izoliniemi je předán dále třídě
+          \texttt{RadiationPolygonizer}, kde jsou z nich vytvořeny
+          zjednodušené polygony pomocí generalizace obsažené v modulu
+          \texttt{generalizer.py} a k němu náležející třídě
+          \texttt{RadiationGeneralizer}. Na závěr jsou ve třídě \texttt{RadiationReport}
           souřadnice lomových bodů polygonu převedeny do souřadnic
           systému \zk{MGRS} a v zadaném formátu vypsány do výstupního
           textového reportu.
@@ -219,28 +223,28 @@ zásuvného modulu patří několik navzájem provázaných souborů:
 
 \begin{figure}[H]
     \centering
-      \includegraphics[width=350pt]{./pictures/ACR_radiacni_pruzkum_polygony_v3.png}
+      \includegraphics[width=300pt]{./pictures/ACR_radiacni_pruzkum_polygony_v3.png}
       \caption[Schematický postup]{Schematický postup (autor: \zk{SÚRO}, v.v.i.)}
       \label{fig:schema}
 \end{figure}
 
 V dalších kapitolách jsou představeny dílčí kroky postupu tvorby
-koncových zjednodušených polygonů.
+koncových zjedno\-dušených polygonů.
 
 \subsection{Tvorba izolinií}
 
 V první fázi jsou ze vstupního gridu vytvořeny izolinie pomocí metody
-\texttt{ContourGenerate} z knihovny \zk{GDAL}. Vstupní grid ovšem
-zahrnuje pouze ohraničené pole bez informací z okolí, což v důsledku znamená, že
+\texttt{ContourGene\-rate} z~knihovny \zk{GDAL}. Vstupní grid ovšem
+zahrnuje pouze ohraničené pole bez~informací z~okolí, což v~důsledku znamená, že
 %%% ML: skutecnost -> okoli ?
-část izolinií netvoří uzavřené oblasti, ale začíná a končí na
-hranicích gridu a není uzavřena. Z těchto izolinií by nebylo možné
-vytvořit polygony, které na vstupu vyžadují uzavřenou oblast. Z tohoto
+část izolinií netvoří uzavřené oblasti, ale začíná a končí 
+na~hranicích gridu a není uzavřena. Z těchto izolinií by nebylo možné
+vytvořit polygony, které na~vstupu vyžadují uzavřenou oblast. Z~tohoto
 důvodu je třeba tyto linie najít a uzavřít pomocí ohraničujícího
 obdélníku.
 
 V prvním kroku jsou určeny izolinie, které nejsou uzavřené
-(pseudokód~\ref{alg:getIntersection}-4), a~pro ně jsou vypočítány
+(pseudokód~\ref{alg:getIntersection}-4), a~pro~ně jsou vypočítány
 průsečíky s ohraničujícím obdélníkem
 (pseudokód~\ref{alg:getIntersection}-5). Tyto průsečíky linií jsou
 přidány do pole průsečíků (pseudokód~\ref{alg:getIntersection}-9)
@@ -386,12 +390,19 @@ ale naopak vytváří novou linii tvořenou body, které podmínku splňují.
 	
 Jedná se o rekurzivní algoritmus, který při zjednodušení řetězce mezi
 body \textit{A} a~\textit{B} vezme hranu \textit{AB}. Pokud
-nejvzdálenější bod (\textit{C}) původní linie je maximálně ve
-vzdálenosti rovnající toleranci \textit{T}, pak je aproximace hrany
+nejvzdálenější bod (\textit{C}) původní linie je maximálně 
+ve~vzdálenosti rovnající toleranci \textit{T}, pak je aproximace hrany
 dostatečná. V opačném případě rozdělí hranu \textit{AB} v daném bodě
 \textit{C}, čímž vzniknou hrany \textit{AC} a \textit{CB}. Ty jsou pak
 rekurzivně aproximovány stejným
 postupem. \cite{hershberger1992speeding}
+
+Tento algoritmus nezachovává vzájemnou polohu linií, je tedy nutné
+ještě dalšími úpravami ošetřit, aby se zjednodušené polygony vzájemně
+neprotínaly. Tyto úpravy jsou však velmi časově náročné a autorka je
+před odevzdáním bakalářské práce nestihla implementovat. Pro správnou
+funkčnost zásuvného modulu jsou však nutné a bude na nich pokračovat
+po odevzdání.
 	
 %	Jedná se o rekurzivní algoritmus, který kolem hrany (spojnice
 % dvou bodů z nové linie) hledá body z původní linie mimo koridor o
@@ -402,13 +413,12 @@ postupem. \cite{hershberger1992speeding}
 % vytvořených kratších spojnicích.
 
 %%% ML: tady opet text nevychazi dobre...
-
 \begin{figure}[H]
     \centering
-      \includegraphics[width=300pt]{./pictures/DPalgoritmus.jpg}
+      \includegraphics[width=350pt]{./pictures/DPalgoritmus.jpg}
       \caption[Ilustrace DP]{Ilustrace Douglas-Peucker algoritmu (zdroj: Ing. Tomáš Bayer, Ph.D., Přírodovědecká fakulta UK)}
       \label{fig:DPalgo}
-\end{figure}
+\end{figure}	
 	
 \begin{algorithm}
 \caption{Douglas–Peuckerův algoritmus}
@@ -425,6 +435,11 @@ postupem. \cite{hershberger1992speeding}
 			\STATE{dMax = d}
 		\ENDIF	
 	\ENDFOR
+	\end{algorithmic}
+\end{algorithm}	
+
+\begin{algorithm}
+    \begin{algorithmic}[1] 
 	\IF{dMax > tolerance}
 		\STATE{rekurze1 = DouglasPeucker(listBodů[1...index], tolerance)}
 		\STATE{rekurze2 = DouglasPeucker(listBodů[index...početBodů], tolerance)}
@@ -438,10 +453,9 @@ postupem. \cite{hershberger1992speeding}
 
 %%% ML: umele pouzit newpage (chtelo by text na poslednich 3-5
 %%% strankach vice sladit (az bude finalni)
-\newpage		
-Tento algoritmus nezachovává vzájemnou polohu linií, je tedy nutné
-ještě dalšími úpravami ošetřit, aby se zjednodušené polygony vzájemně
-neprotínaly. Tyto úpravy jsou však velmi časově náročné a autorka je
-před odevzdáním bakalářské práce nestihla implementovat. Pro správnou
-funkčnost zásuvného modulu jsou však nutné a bude na nich pokračovat
-po odevzdání.
+%%% TK: nakonec jsem zvolila přesun textu výše a rozdělení kódu
+%%% do dvou částí, lepší verzi se mi vytvořit nepodařilo
+\newpage
+
+\section{Návod k použití}
+Návod k instalaci a použití zásuvného modulu je dostupný v přílohách (příloha \ref{user-guide}).
