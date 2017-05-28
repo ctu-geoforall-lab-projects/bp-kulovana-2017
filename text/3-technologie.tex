@@ -73,15 +73,23 @@ přenositelný mezi platformami bez jakýchkoli změn.
 Python má široké využití, od jednoduchých programů po rozsáhlé
 aplikace. Právě pro tyto možnosti, univerzálnost, přehlednost kódu a
 %%% ML: sila? ta veta zni divne
-síla z něj udělaly programovací jazyk, který je mezi začátečníky ve
+výkonnost z něj udělaly programovací jazyk, který je mezi začátečníky ve
 velké oblibě. Během krátké doby v něm funkční skript zvládne napsat
 každý.
   
 % (3) https://docs.python.org/3/faq/general.html#general-python-faq
   
 \section{GDAL}
-
+%Autor: GDAL Team – http://download.osgeo.org/gdal/, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=3762589
 %%% ML: pridat logo? (pro zachovani konzistence)
+
+\begin{figure}[H] \centering
+      \includegraphics[width=150pt]{./pictures/gdal_logo.png}
+      \caption[GDAL logo]{GDAL logo (zdroj:
+\href{https://cs.wikipedia.org/wiki/Soubor:GDALLogoColor.svg}{Wikimedia Commons})}
+      \label{fig:gdal}
+  \end{figure}
+  
 Geospatial Data Abstraction Library (\zk{GDAL}) je knihovna určená pro
 čtení a zápis rastrových a vektorových geodat. Od verze GDAL 2.0 došlo
 k pevnějšímu propojení dvou původně oddělených knihoven - GDAL,
@@ -94,9 +102,11 @@ převedena na GDAL/OGR Project Management Committee, která je součástí
 GDAL/OGR je napsána v jazyce ANSI C a C++ a lze ji použít na
 operačních systémech Linux, Solaris, Mac OS X a Microsoft
 %%% ML: (4) ???
-Windows. Knihovna GDAL je vydávána pod licencí X/MIT. (4) Pro práci se
+%%% TK: doplněna správná citace
+Windows. Knihovna GDAL je vydávána pod licencí X/MIT. Pro práci se
 souřadnicovými systémy a transformaci mezi nimi využívá knihovnu
-PROJ.4. V květnu 2017 byla vydána zatím poslední verze GDAL 2.2.0. (4)
+PROJ.4. V květnu 2017 byla vydána zatím poslední verze GDAL 2.2.0. 
+\cite{gdal}
 
 Díky rozsáhlému množství funkcionalit je využívána v komerční i
 nekomerční sféře a v oblasti GIS patří mezi hlavní free software

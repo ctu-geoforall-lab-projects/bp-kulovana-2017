@@ -3,14 +3,9 @@
 
 Ve této kapitole jsou objasněny stěžejní kroky tvorby zásuvného modulu
 \textit{Radiation reconnaissance results}, popsány vstupní a výstupní
-<<<<<<< HEAD
-soubory. Při tvorbě modulu byly využívány příručky \cite{diveintopython} 
+datové soubory. Při tvorbě modulu byly využívány příručky \cite{diveintopython} 
 \cite{cookbook} \cite{qgis} \cite{ucebnicepython}.
-=======
 %%% ML: vetu dokoncit...
-datové soubory. Při tvorbě modulu byly využívány příručky ... a
-stránky ...\cite{diveIntoPython}
->>>>>>> 740381cf7bc705f0f04dbe628cbdd57c75673251
 
 \section{Vstupní data}
 
@@ -232,14 +227,9 @@ koncových zjednodušených polygonů.
 \subsection{Tvorba izolinií}
 
 V první fázi jsou ze vstupního gridu vytvořeny izolinie pomocí metody
-<<<<<<< HEAD
 \texttt{ContourGenerate} z knihovny \zk{GDAL}. Vstupní grid ovšem
 zahrnuje pouze ohraničené pole bez informací z okolí, což v důsledku znamená, že
-=======
-\texttt{Contour\-Generate} z knihovny \zk{GDAL}. Vstupní grid ovšem
 %%% ML: skutecnost -> okoli ?
-zahrnuje oblast vyňatou ze skutečnosti, což v důsledku znamená, že
->>>>>>> 740381cf7bc705f0f04dbe628cbdd57c75673251
 část izolinií netvoří uzavřené oblasti, ale začíná a končí na
 hranicích gridu a není uzavřena. Z těchto izolinií by nebylo možné
 vytvořit polygony, které na vstupu vyžadují uzavřenou oblast. Z tohoto
