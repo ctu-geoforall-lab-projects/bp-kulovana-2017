@@ -3,8 +3,8 @@
 
 Ve 4. kapitole jsou objasněny stěžejní kroky tvorby zásuvného modulu
 \textit{Radiation reconnaissance results}, popsány vstupní a výstupní
-soubory. Při tvorbě modulu byly využívány příručky ... a stránky
-...\cite{diveIntoPython}
+soubory. Při tvorbě modulu byly využívány příručky \cite{diveintopython} 
+\cite{cookbook} \cite{qgis} \cite{ucebnicepython}.
 
 \section{Vstupní data}
 
@@ -220,7 +220,7 @@ koncových zjednodušených polygonů.
 
 V první fázi jsou ze vstupního gridu vytvořeny izolinie pomocí metody
 \texttt{ContourGenerate} z knihovny \zk{GDAL}. Vstupní grid ovšem
-zahrnuje oblast vyňatou ze skutečnosti, což v důsledku znamená, že
+zahrnuje pouze ohraničené pole bez informací z okolí, což v důsledku znamená, že
 část izolinií netvoří uzavřené oblasti, ale začíná a končí na
 hranicích gridu a není uzavřena. Z těchto izolinií by nebylo možné
 vytvořit polygony, které na vstupu vyžadují uzavřenou oblast. Z tohoto
@@ -336,7 +336,8 @@ polygony. Následně jsou zjednodušeny s využitím metody
 \texttt{Simplify} ze stejné knihovny. Nakonec jsou souřadnice
 zjednodušených polygonů převedeny do systému \zk{MGRS} a vypsány do
 textového reportu kompatibilního s formátem dle
-APP-11. %odkaz na textový report
+APP-11\footnote{\url{https://nhqc3s.hq.nato.int/Apps/Architecture/NISP2/std.aspx?vndb=standards&sbbs=y&refid=nato-app-11-d}}.
+%%% TK: Přímo katalog k dispozici nemám.
 
 \begin{algorithm}
 \caption{Tvorba a zjednodušení polygonů}
