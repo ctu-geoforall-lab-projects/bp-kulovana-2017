@@ -26,5 +26,6 @@ TODO
 
 ## Testovací data
 
-https://github.com/ctu-geoforall-lab-projects/bp-kulovana-2017/tree/master/sample_data
+[sample_data](https://github.com/ctu-geoforall-lab-projects/bp-kulovana-2017/tree/master/sample_data)
+
 http://www.mediafire.com/file/5yzpynibxigcvng/podklady_ACR_terenni_pruzkum.7z
