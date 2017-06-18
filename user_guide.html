@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User Guide &mdash; Radiation Reconnaissance Results QGIS Plugin 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Radiation Reconnaissance Results QGIS Plugin 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Acknowledgement" href="acknowledgement.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Radiation Reconnaissance Results QGIS Plugin
+          
+
+          
+            
+            <img src="_static/icon.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gui">GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-data">Input data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-data">Output data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgement</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Radiation Reconnaissance Results QGIS Plugin</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/user_guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The plugin Radiation reconnaissance results uses interpolated radiation map in
+raster format as input data. In first step it generates isolines in preset
+levels and afterwards converts them into polygons and simplifies them to fit
+the limit of total 50 vertices per polygon (in fact it is 49 as first and last
+vertex has to have the same coordinates to close the polygon) for the text
+message. The output is text file in NATO APP-11 and ATP-45 compatible format
+and is then used as a part of a military MTF message.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/MTF.png" src="_images/MTF.png" />
+<p class="caption"><span class="caption-text">Figure 1: MTF message.</span></p>
+</div>
+<p>Plugin was developed following the specifications and with the help provided
+by the specialists of <a class="reference external" href="http://www.army.cz/en/ministry-of-defence/newsroom/news/military-radiation-monitoring-net-activated-for-training-exercise-131399/">the 314th NBC Warning Centre in Hostivice</a>, Armed Forces of the Czech Republic (<a class="reference external" href="http://www.army.cz/en/">ACR</a>) and
+National Radiation Protection Institute (<a class="reference external" href="http://www.suro.cz/">SÚRO</a>).</p>
+</div>
+<div class="section" id="gui">
+<h2>GUI<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h2>
+<p>The plugin is divided into two tabs. The first of them is <code class="docutils literal"><span class="pre">Main</span></code> tab:</p>
+<div class="figure align-center" id="id2">
+<img alt="_images/main_tab.jpg" src="_images/main_tab.jpg" />
+<p class="caption"><span class="caption-text">Figure 2: The main tab of plugin.</span></p>
+</div>
+<ul class="simple">
+<li>User selects the raster input and chooses appropriate input type (dose rate
+or surface activity). The raster combo box includes available layers from the
+Layer panel or it is possible to upload a raster file via button <code class="docutils literal"><span class="pre">Load</span>
+<span class="pre">raster</span></code>. By hitting this button, a file dialog opens and user can choose
+desired file (only GDAL supported files are shown). Pressing <code class="docutils literal"><span class="pre">OK</span></code> will
+insert this path to the raster selection. Click on <code class="docutils literal"><span class="pre">Cancel</span></code> will interrupt
+the choosing dialog and the raster selection will not be changed.</li>
+<li>Click on a tool button <code class="docutils literal"><span class="pre">...</span></code> opens a file dialog where user defines the
+path where the report file will be saved. This file is mandatory so <code class="docutils literal"><span class="pre">Solve</span></code>
+button is disabled until path is defined.</li>
+<li>After pressing <code class="docutils literal"><span class="pre">Solve</span></code> button, plugin generates simplified polygons and
+saves output file(s) to selected destination(s).</li>
+</ul>
+<p>The second tab of the plugin is <code class="docutils literal"><span class="pre">Settings</span></code> tab:</p>
+<div class="figure align-center" id="id3">
+<img alt="_images/settings_tab.jpg" src="_images/settings_tab.jpg" />
+<p class="caption"><span class="caption-text">Figure 3: The settings tab.</span></p>
+</div>
+<ul class="simple">
+<li>This tab shows levels used for isolines generation. By default all levels
+available for selected input type are checked but user can uncheck particular
+ones.</li>
+<li>For dose rates the preset levels are 0.1, 1, 5, 10, 50, 100 and 1000 cGy/h.</li>
+<li>For surface activities the preset levels are 0.01, 1, 10, 100 MBq/m2.</li>
+<li>The last check box allows user to decide if file of simplified polygons
+should be created. This output is optional but by default the check box is
+checked.</li>
+</ul>
+</div>
+<div class="section" id="input-data">
+<h2>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id4">
+<img alt="_images/input.jpg" src="_images/input.jpg" />
+<p class="caption"><span class="caption-text">Figure 4: Input file.</span></p>
+</div>
+<p>A raster grid of dose rate or surface activity with a format supported by
+<a class="reference external" href="http://www.gdal.org/formats_list.html">GDAL library</a>. Dose rate grid units
+has to be in cGy/h (centiGray/hour = 0.01 Gray/hour), surface activities in
+MBq/m2 (megaBecquerel per square meter).</p>
+</div>
+<div class="section" id="output-data">
+<h2>Output data<a class="headerlink" href="#output-data" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Report (mandatory)
+Structure of the output text report is following:</p>
+<p>/[VALUE][UNIT]/MGRS:[COORDINATE]/MGRS:[COORDINATE]/MGRS:[COORDINATE]//</p>
+<p>where:</p>
+<ul class="simple">
+<li>VALUE = dose rate value or surface activity value; decimal separator is
+dot</li>
+<li>UNIT = used unit in XYH format; where X = C (centi), M (mili), U (micro);
+Y = G (gray), S (sievert); or BQM2 (becquerel per square meter)</li>
+<li>COORDINATE = coordinates in MGRS system, alphanumeric characters</li>
+</ul>
+<p>All text must be in capital letters. The report must begin with a slash,
+everything between two slashes is called a field. Field 1 can contain up to 12
+characters. Field 2 can have up to 50 reps (maximum 50 coordinates), and each
+field can contain up to 15 characters behind the MGRS identifier (eg.
+accuracy in meters). The last coordinate ends with a double slash (indicates
+the end of a line). Everything between the first slash and the double slash is
+called a line. Individual lines must be separated by line break. There must be
+no space before or behind the slash. There is no space between VALUE and UNIT.
+There is no space between &#8220;MGRS:&#8221; and the coordinate, the colon must be
+retained.</p>
+<p>The output may contain multiple rows, each being related to another level of
+the measured variable (eg, 3 rows sequentially for 1CGH, 10CGH and 50CGH).</p>
+</li>
+</ul>
+<div class="figure align-center" id="id5">
+<img alt="_images/output_report.jpg" src="_images/output_report.jpg" />
+<p class="caption"><span class="caption-text">Figure 5: Output report.</span></p>
+</div>
+<ul>
+<li><p class="first">File of simplified polygons (optional)</p>
+<p>File of polygons in format Esri Shapefile (.shp) is created if check box is
+checked. It is saved in the same directory as input raster file.</p>
+</li>
+</ul>
+<blockquote>
+<div><div class="figure align-center" id="id6">
+<img alt="_images/output_polygons.jpg" src="_images/output_polygons.jpg" />
+<p class="caption"><span class="caption-text">Figure 6: File of simplified polygons.</span></p>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="acknowledgement.html" class="btn btn-neutral float-right" title="Acknowledgement" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2017, Tereza Kulovana (CTU GeoForAll Lab).
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
