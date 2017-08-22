@@ -6,6 +6,12 @@
 Radiation Reconnaissance Results QGIS Plugin's Documentation
 ============================================================
 
+.. warning:: This documentation corresponds to bachelor thesis "Zásuvný
+   modul QGIS pro terénní radiační průzkum" (`PDF
+   <https://github.com/ctu-geoforall-lab-projects/bp-kulovana-2017/raw/master/text/tereza-kulovana-bp-2017.pdf>`__). Up-to-date
+   documentation is available at
+   https://ctu-geoforall-lab.github.io/qgis-radiation-reconnaissance-results-plugin/.
+
 This plugin generates predefined isolines from interpolated grid of dose rate 
 or surface activity and it converts them to simplified polygons. Main output 
 is a text report with coordinates in a MGRS system using format specified by 

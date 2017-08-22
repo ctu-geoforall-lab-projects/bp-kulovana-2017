@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -86,7 +89,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgement</a></li>
@@ -102,8 +108,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">Radiation Reconnaissance Results QGIS Plugin</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Radiation Reconnaissance Results QGIS Plugin</a>
+        
       </nav>
 
 
@@ -112,23 +120,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>Radiation Reconnaissance Results QGIS Plugin&#8217;s Documentation</li>
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Radiation Reconnaissance Results QGIS Plugin&#8217;s Documentation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -136,6 +161,13 @@
             
   <div class="section" id="radiation-reconnaissance-results-qgis-plugin-s-documentation">
 <h1>Radiation Reconnaissance Results QGIS Plugin&#8217;s Documentation<a class="headerlink" href="#radiation-reconnaissance-results-qgis-plugin-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This documentation corresponds to bachelor thesis &#8220;Zásuvný
+modul QGIS pro terénní radiační průzkum&#8221; (<a class="reference external" href="https://github.com/ctu-geoforall-lab-projects/bp-kulovana-2017/raw/master/text/tereza-kulovana-bp-2017.pdf">PDF</a>). Up-to-date
+documentation is available at
+<a class="reference external" href="https://ctu-geoforall-lab.github.io/qgis-radiation-reconnaissance-results-plugin/">https://ctu-geoforall-lab.github.io/qgis-radiation-reconnaissance-results-plugin/</a>.</p>
+</div>
 <p>This plugin generates predefined isolines from interpolated grid of dose rate
 or surface activity and it converts them to simplified polygons. Main output
 is a text report with coordinates in a MGRS system using format specified by
@@ -164,12 +196,15 @@ APP-11 NATO Message Catalogue.</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -204,7 +239,8 @@ APP-11 NATO Message Catalogue.</p>
             VERSION:'0.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
